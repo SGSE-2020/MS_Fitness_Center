@@ -5,10 +5,144 @@ get '/' do
     'Welcome to the Sinatra API test'
 end
 
-get '/test' do
-    'Here we are testing the opportunity to access other websites'
+before do
+    content_type 'application/json'
 end
 
-get '/result' do
-    'It is as easy as it can be!'
+# all getters
+
+get '/locations' do
+    [
+            {name: 'Smart City', address: 'Hinter dem Hügel 2', description: 'Some Text'},
+            {name: 'Smart City2', address: 'Hinter dem Hügel 3', description: 'This one is better'},
+    ].to_json
+        
 end
+
+get '/welcome' do
+    {text: 'Nice to see you here!'}.to_json
+end
+
+get '/devices' do
+    [
+        {
+            name: 'Butterfly', 
+            description: 'Some fancy work', 
+            locations: [
+                {name: 'Smart City2'},
+                {name: 'Smart City2'}
+            ],
+            muscles: [
+                {name: "Großer Rückenmuskel"},
+                {name: "Brustmuskel"}
+            ],
+        },
+    ].to_json
+end
+
+get '/courses' do
+    [
+        {
+            name: 'Spinning',
+            description: 'Some fine biking',
+            dates: [
+                {
+                    day: 1, 
+                    duration: 90, 
+                    locations: [
+                        {name: 'Smart City'},
+                        {name: 'Smart City2'}
+                    ] ,
+                },
+                {
+                    day: 4, 
+                    duration: 90, 
+                    locations: [
+                        {name: 'Smart City'},
+                    ] ,
+                },
+            ]
+        }
+    ].to_json
+end
+
+get '/abo' do
+    [
+        {name: 'Sparpreis', description: 'Supper viel sparen', costs: 12.99, term: 24},
+        {name: 'Normal', description: 'Nicht ganz so viel sparen', costs: 15.99, term: 12},
+        {name: 'Teuer', description: 'Nicht sparen', costs: 24.99, term: 1},
+    ].to_json
+end
+
+get '/personal_data:id' do |id|
+    {
+        id: id, 
+        name: 'Karl Marx', 
+        birthday: '18.04.1998', 
+        tel: 123456789, 
+        mail: 'funy@rly.com', 
+        height: 190,
+        weight: 180,
+        performance_level: 5,
+        other_activitys: 'Sports',
+        diseases: ['Nothing'],
+        goal: 'Marathon',
+        aviable_time: 2,
+        abo_start: '20.04.2009',
+        abo: {name: 'Sparpreis', description: 'Supper viel sparen', costs: 12.99, term: 24}
+    }.to_json
+end
+
+get '/anamnesis:id' do |id|
+    {
+        height: 190,
+        weight: 180,
+        performance_level: 5,
+        other_activitys: 'Sports',
+        diseases: ['Nothing'],
+        goal: 'Marathon',
+        aviable_time: 2,
+    }.to_json
+end
+
+get '/members' do
+    [
+        {id: 24, name: 'Karl Marx', role: 'Kunde'},
+        {id: 42, name: 'Karl Marxnicht', role: 'Trainer'},
+    ].to_json
+end
+
+get '/requests/trainingplan' do
+    [
+        {id: 24, name: 'Karl Marx', day: '20.04.2020'}
+    ].to_json
+end
+
+get '/requests/treatment' do
+    [
+        {id: 24, name: 'Karl Marx', day: '20.04.2020'}
+    ].to_json
+end
+
+get '/trainingplan:id' do |id|
+    {
+        name: 'Starting now',
+        note: 'Dont make too much',
+        exercises: [
+            {
+                device_name: 'Butterfly',
+                sets: 4,
+                repetitions: 8,
+                duration: ''
+            }
+        ]
+    }.to_json
+end
+
+get '/treatment/note:id' do |id|
+    [ 
+        {date: '09.03.2020', note: 'No progress at all'},
+        {date: '02.03.2020', note: 'He was to late'},
+    ].to_json
+end
+
