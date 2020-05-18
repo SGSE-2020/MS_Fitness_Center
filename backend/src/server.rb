@@ -1,26 +1,29 @@
 require_relative 'grpc_server'
 require 'sinatra'
 
+set :port, 3030
+
 get '/' do
     'Welcome to the Sinatra API test'
 end
 
 before do
     content_type 'application/json'
+    response['Access-Control-Allow-Origin'] = '*'
 end
 
 # all getters
 
 get '/locations' do
     [
-            {name: 'Smart City', address: 'Hinter dem Hügel 2', description: 'Some Text'},
-            {name: 'Smart City2', address: 'Hinter dem Hügel 3', description: 'This one is better'},
+            {name: 'Smart City', street: 'Hinter dem Hügel 2', place: 'Smart City', description: 'Some Text'},
+            {name: 'Smart City2', street: 'Hinter dem Hügel 3', place: 'Smart City', description: 'This one is better'},
     ].to_json
         
 end
 
 get '/welcome' do
-    {text: 'Nice to see you here!'}.to_json
+    {title: 'Willkommen!', text: 'Nice to see you here!\nLorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.\n\n Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.'}.to_json
 end
 
 get '/devices' do
@@ -29,7 +32,19 @@ get '/devices' do
             name: 'Butterfly', 
             description: 'Some fancy work', 
             locations: [
-                {name: 'Smart City2'},
+                {name: 'Smart City'},
+                {name: 'Smart City2'}
+            ],
+            muscles: [
+                {name: "Großer Rückenmuskel"},
+                {name: "Brustmuskel"}
+            ],
+        },
+        {
+            name: 'Butterflyer', 
+            description: 'Some fancy work', 
+            locations: [
+                {name: 'Smart City'},
                 {name: 'Smart City2'}
             ],
             muscles: [
@@ -47,7 +62,9 @@ get '/courses' do
             description: 'Some fine biking',
             dates: [
                 {
-                    day: 1, 
+                    day: 1,
+                    hour: 18,
+                    minutes: 30,
                     duration: 90, 
                     locations: [
                         {name: 'Smart City'},
@@ -55,8 +72,45 @@ get '/courses' do
                     ] ,
                 },
                 {
-                    day: 4, 
+                    day: 1,
+                    hour: 20,
+                    minutes: 30,
                     duration: 90, 
+                    locations: [
+                        {name: 'Smart City'},
+                        {name: 'Smart City2'}
+                    ] ,
+                },
+                {
+                    day: 4,
+                    hour: 18,
+                    minutes: 30,
+                    duration: 90,
+                    locations: [
+                        {name: 'Smart City'},
+                    ] ,
+                },
+            ]
+        },
+        {
+            name: 'Zumba',
+            description: 'Not some fine biking',
+            dates: [
+                {
+                    day: 1,
+                    hour: 20,
+                    minutes: 30,
+                    duration: 90, 
+                    locations: [
+                        {name: 'Smart City'},
+                        {name: 'Smart City2'}
+                    ] ,
+                },
+                {
+                    day: 4,
+                    hour: 18,
+                    minutes: 30,
+                    duration: 90,
                     locations: [
                         {name: 'Smart City'},
                     ] ,
