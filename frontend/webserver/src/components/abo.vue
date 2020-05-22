@@ -31,7 +31,6 @@ export default {
     fetch(new String("http://").concat(api_config.url, ':', api_config.port, "/abo"))
       .then(response => response.json())
       .then(json => {
-        console.log(json)
         this.abos = json
       })
   }

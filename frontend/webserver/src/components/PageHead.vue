@@ -1,9 +1,17 @@
 <template>
   <div id="header">
+    <div id="container">
       <img id="img" alt="Banner" src="../assets/banner.png">
-      <nav class="navigation">
-        <router-link class="elems" v-for="routes in links" v-bind:key="routes.id" :to="`${routes.page}`">{{routes.text}}</router-link>
-      </nav>
+      <router-link id="multiusericon" to='/members'>
+        <img src="../assets/maenner.svg">
+      </router-link>
+      <router-link id="usericon" to='/profile'>
+        <img src="../assets/benutzer.svg">
+      </router-link>
+    </div>
+    <nav class="navigation">
+      <router-link class="elems" v-for="routes in links" v-bind:key="routes.id" :to="`${routes.page}`">{{routes.text}}</router-link>
+    </nav>
     </div>
 </template>
 
@@ -11,28 +19,28 @@
 export default {
   name: 'PageHead',
   data() {
-      return {
-      links: [
-        {
-          id: 0,
-          text: 'Home',
-          page:'/home'
-        },
-        {
-          id: 1,
-          text: 'Geräte',
-          page:'/devices'
-        },
-        {
-          id: 2,
-          text: 'Kurse',
-          page:'/courses'
-        },
-        {
-          id: 3,
-          text: 'Abos',
-          page:'/abo'
-        }
+    return {
+    links: [
+      {
+        id: 0,
+        text: 'Home',
+        page: '/home'
+      },
+      {
+        id: 1,
+        text: 'Geräte',
+        page: '/devices'
+      },
+      {
+        id: 2,
+        text: 'Kurse',
+        page: '/courses'
+      },
+      {
+        id: 3,
+        text: 'Abos',
+        page: '/abo'
+       }
       ]
     }
   }
@@ -40,11 +48,6 @@ export default {
 </script>
 
 <style scoped>
-  #img {
-    max-width:100%;
-    height:auto;
-    margin: 0;
-  }
   .navigation {
     margin-top: -4px;
     width: 100%;
@@ -69,4 +72,24 @@ export default {
     background-color: #4CAF50;
   }
 
+
+  #container {
+    position: relative;
+  }
+  #img {
+    max-width:100%;
+    height:auto;
+    margin: 0;
+    display: block; 
+  }
+  #multiusericon {
+    width: 50px;
+    height: 50px;
+    position: absolute; bottom:10px; right:70px;
+  }
+  #usericon {
+    width: 40px;
+    height: 40px;
+    position: absolute; bottom:15px; right:15px;
+  }
 </style>

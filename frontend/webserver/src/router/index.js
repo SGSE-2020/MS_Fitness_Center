@@ -5,6 +5,8 @@ import Home from '@/components/home'
 import Devices from '@/components/devices'
 import Courses from '@/components/courses'
 import Abo from '@/components/abo'
+import Profile from '@/components/profile'
+import Members from '@/components/members'
 
 Vue.use(Router)
 
@@ -34,6 +36,16 @@ export default new Router({
       path: '/abo',
       name: 'Abo',
       component: Abo
+    },
+    {
+      path: '/profile',
+      name: 'Profile',
+      component: Profile
+    },
+    {
+      path: '/members',
+      name: 'Members',
+      component: Members
     }
   ]
 })
