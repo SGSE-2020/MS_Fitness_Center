@@ -8,6 +8,12 @@ $LOAD_PATH.unshift(lib_dir) unless $LOAD_PATH.include?(lib_dir)
 require 'grpc'
 require 'multi_json'
 require 'route_fitness_center_services_pb'
+require 'logger'
+
+logger = Logger.new('/proc/1/fd/1')
+logger.formatter = proc do |severity, datetime, progname, msg|
+    "grpc: #{msg}\n"
+end
 
 include Routeguide
 
@@ -66,7 +72,7 @@ child_pid = fork do
     main
 end
 
-puts "==== GRPC startet wit PID #{child_pid} ===="
+logger.warn "==== GRPC startet wit PID #{child_pid} ===="
 
 at_exit do
     puts 'Waiting for gRPC sever to teminate'

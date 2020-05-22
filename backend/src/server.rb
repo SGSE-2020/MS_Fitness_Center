@@ -3,11 +3,41 @@ require 'bundler/setup'
 require_relative 'grpc_server'
 require_relative 'psql_database'
 require 'sinatra'
+require 'logger'
+
+logger = Logger.new('/proc/1/fd/1')
+logger.formatter = proc do |severity, datetime, progname, msg|
+    "api: #{msg}\n"
+end
+
+logger.warn('Insert sample data')
+insert_sample_data
 
 class API < Sinatra::Base
 
+    def fetch_from_database(request) 
+        result = ''
+        begin
+            # Initialize connection variables.
+            host = String('database')
+            database = String('fitnesscenter')
+            user = String('postgres')
+            password = String('1234')
+            connection = PG::Connection.new(:host => host, :user => user, :dbname => database, :port => '5432', :password => password)
+
+            result = connection.exec(request)
+
+        rescue PG::Error => e
+            logger.warn e.message 
+        ensure
+            connection.close if connection
+        end
+        result
+    end
+
     get '/' do
         'Welcome to the Sinatra API test'
+        puts 'test'
     end
 
     before do
@@ -18,11 +48,12 @@ class API < Sinatra::Base
     # all getters
 
     get '/locations' do
-        [
-                {name: 'Smart City', street: 'Hinter dem Hügel 2', place: 'Smart City', description: 'Some Text'},
-                {name: 'Smart City2', street: 'Hinter dem Hügel 3', place: 'Smart City', description: 'This one is better'},
-        ].to_json
-            
+        result = fetch_from_database("SELECT name, street, place, description FROM location")
+        data = []
+        result.each do |row|
+            data.append({name: row['name'], street: row['street'], place: row['place'], description: row['description']})
+        end
+        data.to_json
     end
 
     get '/welcome' do

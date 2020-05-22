@@ -1,36 +1,40 @@
-
 require 'pg'
+require 'logger'
 
-require 'pg'
+logger = Logger.new('/proc/1/fd/1')
+logger.formatter = proc do |severity, datetime, progname, msg|
+    "psql: #{msg}\n"
+end
 
 begin
 	# Initialize connection variables.
-	host = String('localhost')
-	database = String('mydb')
+    host = String('database')
+	database = String('fitnesscenter')
     user = String('postgres')
 	password = String('1234')
 
 	# Initialize connection object.
     connection = PG::Connection.new(:host => host, :user => user, :dbname => database, :port => '5432', :password => password)
-    puts 'Successfully created connection to database'
+    logger.warn 'Successfully created connection to database'
 
-    puts 'Init database:'
+    logger.warn 'Init database:'
 
     #############################
     ##### TABLES WITHOUT FK #####
     #############################
 
     # LOCATION
-    puts 'create location...'
+    logger.warn 'create location...'
     connection.exec('CREATE TABLE IF NOT EXISTS location (
         id SERIAL NOT NULL PRIMARY KEY,
+        name TEXT NOT NULL,
         description TEXT NOT NULL,
         street TEXT NOT NULL,
         place TEXT NOT NULL
     );')
 
     # DEVICE
-    puts 'create device...'
+    logger.warn 'create device...'
     connection.exec('CREATE TABLE IF NOT EXISTS device (
         id SERIAL NOT NULL PRIMARY KEY,
         name TEXT NOT NULL,
@@ -38,7 +42,7 @@ begin
     );')
 
     # COURSE
-    puts 'create course...'
+    logger.warn 'create course...'
     connection.exec('CREATE TABLE IF NOT EXISTS course (
         id SERIAL NOT NULL PRIMARY KEY,
         name TEXT NOT NULL,
@@ -46,7 +50,7 @@ begin
     );')
 
     # ABO
-    puts 'create abo...'
+    logger.warn 'create abo...'
     connection.exec('CREATE TABLE IF NOT EXISTS abo (
         id SERIAL NOT NULL PRIMARY KEY,
         name TEXT NOT NULL,
@@ -56,7 +60,7 @@ begin
     );')
 
     # MUSCLE
-    puts 'create muscle...'
+    logger.warn 'create muscle...'
     connection.exec('CREATE TABLE IF NOT EXISTS muscle (
         id SERIAL NOT NULL PRIMARY KEY,
         name TEXT NOT NULL,
@@ -68,7 +72,7 @@ begin
     ##########################
 
     # MEMBER
-    puts 'create member...'
+    logger.warn 'create member...'
     connection.exec('CREATE TABLE IF NOT EXISTS member (
         id SERIAL NOT NULL PRIMARY KEY,
         role INTEGER NOT NULL,
@@ -84,7 +88,7 @@ begin
     );')
 
     # TREATMENTNOTE
-    puts 'create treatmentnote...'
+    logger.warn 'create treatmentnote...'
     connection.exec('CREATE TABLE IF NOT EXISTS treatmentnote (
         id SERIAL NOT NULL PRIMARY KEY,
         day DATE NOT NULL,
@@ -93,16 +97,18 @@ begin
     );')
 
     # DATES
-    puts 'create date...'
+    logger.warn 'create date...'
     connection.exec('CREATE TABLE IF NOT EXISTS date (
         id SERIAL NOT NULL PRIMARY KEY,
         week_day INTEGER NOT NULL,
+        hour INTEGER NOT NULL,
+        min INTEGER NOT NULL,
         duration INTEGER NOT NULL,
         course_id INTEGER NOT NULL REFERENCES course(id)
     );')
 
     # TREATMENTREQUEST
-    puts 'create treatmentrequest...'
+    logger.warn 'create treatmentrequest...'
     connection.exec('CREATE TABLE IF NOT EXISTS treatmentrequest (
         id SERIAL NOT NULL PRIMARY KEY,
         request_date DATE NOT NULL,
@@ -111,7 +117,7 @@ begin
     );')
 
     # TRAININGPLANREQUEST
-    puts 'create trainingplanrequest...'
+    logger.warn 'create trainingplanrequest...'
     connection.exec('CREATE TABLE IF NOT EXISTS trainingplanrequest (
         id SERIAL NOT NULL PRIMARY KEY,
         request_date DATE NOT NULL,
@@ -119,7 +125,7 @@ begin
     );')
 
     # TRAININGPLAN
-    puts 'create trainingplan...'
+    logger.warn 'create trainingplan...'
     connection.exec('CREATE TABLE IF NOT EXISTS trainingplan (
         id SERIAL NOT NULL PRIMARY KEY,
         name TEXT NOT NULL,
@@ -128,8 +134,8 @@ begin
     );')
 
     # EXERCISE
-    puts 'create exercise...'
-    connection.exec('CREATE TABLE IF NOT EXISTS trainingplan (
+    logger.warn 'create exercise...'
+    connection.exec('CREATE TABLE IF NOT EXISTS exercise (
         trainingplan_id INTEGER NOT NULL REFERENCES trainingplan(id),
         device_id INTEGER NOT NULL REFERENCES device(id),
         sets INTEGER NOT NULL,
@@ -143,7 +149,7 @@ begin
     ###############################
 
     # DATE_LOCATION
-    puts 'create date_location...'
+    logger.warn 'create date_location...'
     connection.exec('CREATE TABLE IF NOT EXISTS date_location (
         date_id INTEGER NOT NULL REFERENCES date(id),
         location_id INTEGER NOT NULL REFERENCES location(id),
@@ -151,7 +157,7 @@ begin
     );')
 
     # LOCATION_DEVICE
-    puts 'create location_device...'
+    logger.warn 'create location_device...'
     connection.exec('CREATE TABLE IF NOT EXISTS location_device (
         location_id INTEGER NOT NULL REFERENCES location(id),
         device_id INTEGER NOT NULL REFERENCES device(id),
@@ -159,7 +165,7 @@ begin
     );')
 
     # DEVICE_MUSCLE
-    puts 'create device_muscle...'
+    logger.warn 'create device_muscle...'
     connection.exec('CREATE TABLE IF NOT EXISTS device_muscle (
         device_id INTEGER NOT NULL REFERENCES device(id),
         muscle_id INTEGER NOT NULL REFERENCES muscle(id),
@@ -169,56 +175,351 @@ begin
 
 
     # list all tables
-    puts "\nAll tables:"
+    logger.warn "\nAll tables:"
     result = connection.exec('SELECT * FROM pg_catalog.pg_tables WHERE schemaname != \'pg_catalog\' AND schemaname != \'information_schema\';')
     result.each do |row|
-        puts "%s" % [ row['tablename']]
-      end
+        logger.warn "%s" % [ row['tablename']]
+    end
 
 rescue PG::Error => e
-    puts e.message 
+    logger.warn e.message 
 ensure
     connection.close if connection
 end
 
 def insert_sample_data
+    begin
+        logger = Logger.new('/proc/1/fd/1')
+        logger.formatter = proc do |severity, datetime, progname, msg|
+            "psqlSampleData: #{msg}\n"
+        end
+
+        # Initialize connection variables.
+        host = String('database')
+        database = String('fitnesscenter')
+        user = String('postgres')
+        password = String('1234')
+    
+        # Initialize connection object.
+        connection = PG::Connection.new(:host => host, :user => user, :dbname => database, :port => '5432', :password => password)
+        logger.warn 'Successfully created connection to database'
+
+        logger.warn 'INSERT EXAMPLE DATA'    # LOCATION
+
+        # Delete old data
+        connection.exec("DELETE FROM exercise")
+        connection.exec("DELETE FROM trainingplan")
+        connection.exec("DELETE FROM treatmentnote")
+        connection.exec("DELETE FROM trainingplanrequest")
+        connection.exec("DELETE FROM treatmentrequest")
+        connection.exec("DELETE FROM member")
+        connection.exec("DELETE FROM abo")
+        connection.exec("DELETE FROM date_location")
+        connection.exec("DELETE FROM date")
+        connection.exec("DELETE FROM course")
+        connection.exec("DELETE FROM location_device")
+        connection.exec("DELETE FROM device_muscle")
+        connection.exec("DELETE FROM muscle")
+        connection.exec("DELETE FROM device")
+        connection.exec("DELETE FROM location")
+
+
+        # LOCATION
+        connection.exec("INSERT INTO location VALUES(
+            1,
+            'Smart City - Straße 7',
+            'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.',
+            'Straße 7',
+            '4242 Smart City'
+        );")
+        connection.exec("INSERT INTO location VALUES(
+            2,
+            'Smart City - Straße 73',
+            'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.',
+            'Straße 73',
+            '4242 Smart City'
+        );")
+
+        # DEVICES
+        connection.exec("INSERT INTO device VALUES(
+            1,
+            'Butterfly',
+            'Mit der Butterfly-Maschine trainierst Du primär Deine Brustmuskulatur. Die Brustmuskeln (musculus pectoralis major et minor) sind für das Zusammenführen der Arme vor dem Körper zuständig. Bei der eGym Butterfly-Maschine wird die Brustmuskulatur im Gegensatz zu anderen Brust Übungen wie Liegestützen über den vollen Bewegungsumfang trainiert. Hier müssen Deine Brustmuskeln auch im Endpunkt maximal arbeiten. Insbesondere die inneren Bereiche der Brust werden so stärker trainiert. Eine gut ausgebildete Brustmuskulatur ist für die Stabilisierung und somit für die Gesundheit des Schultergelenks unerlässlich.'
+        );")
+        connection.exec("INSERT INTO device VALUES(
+            2,
+            'Beinstrecker',
+            'Mit dem Beinstrecker trainierst Du Deine vorderen Oberschenkelmuskeln, d. h. den vierköpfigen Oberschenkelmuskel (Musculus quadriceps femoris). Der Quadrizeps ist der Muskel mit der größten Muskelmasse im Körper und besteht aus vier Köpfen oder Teilen, dem geraden Oberschenkelmuskel (Musculus rectus femoris), dem inneren Oberschenkelmuskel (Musculus vastus medialis), dem mittleren Oberschenkelmuskel (Musculus vastus intermedius) und dem äußeren Oberschenkelmuskel (Musculus vastus lateralis). Die Hauptfunktion Deiner vorderen Oberschenkelmuskulatur ist die Kniestreckung, wie z. B. beim Laufen und Springen.'
+        );")
+
+        # MUSCLE
+        connection.exec("INSERT INTO muscle VALUES(
+            1,
+            'Brustmuskel',
+            ''
+        );")
+        connection.exec("INSERT INTO muscle VALUES(
+            2,
+            'Vorderer Armmuskel',
+            ''
+        );")
+        connection.exec("INSERT INTO muscle VALUES(
+            3,
+            'Vorderer Oberschenkelmuskel',
+            ''
+        );")
+
+        # DEVICE_MUSCLE
+        connection.exec("INSERT INTO device_muscle VALUES(
+            1,
+            1
+        );")
+        connection.exec("INSERT INTO device_muscle VALUES(
+            1,
+            2
+        );")
+        connection.exec("INSERT INTO device_muscle VALUES(
+            2,
+            3
+        );")
+
+        # LOCATION_DEVICE
+        connection.exec("INSERT INTO location_device VALUES(
+            1,
+            1
+        );")
+        connection.exec("INSERT INTO location_device VALUES(
+            2,
+            1
+        );")
+        connection.exec("INSERT INTO location_device VALUES(
+            1,
+            2
+        );")
+
+        # COURSE
+        connection.exec("INSERT INTO course VALUES(
+            1,
+            'Spinning',
+            'Im Gegensatz zum Heimfahrrad oder Ergometer ist das Spinning-Bike ein Standrad mit Starrlauf, mit dem man das tatsächliche Radtraining sinnvoll simulieren bzw. um spezielle Technik-Drills ergänzen kann. Mentale Hilfen, zum Beispiel Visualisierung, und spezielle Atemtechniken kommen ebenfalls zum Einsatz. '
+        );")
+        connection.exec("INSERT INTO course VALUES(
+            2,
+            'Bodyatack',
+            'BODYATTACK ist eine hochintensive Fitness-Class mit Bewegungsabläufen, die sowohl für absolute Anfänger als auch für Fitness-Freaks geeignet sind. Dieses Workout kombiniert athletische Bewegung wie Laufen, Ausfallschritte oder Springen mit Kraftübungen wie Push-Ups und Squats. Ein Instruktor führt dich mit energiegeladener Musik durchs Workout und motiviert dich dazu, an deine Grenzen zu gehen. Dabei verbrennst du bis zu 730 Kalorien^ und fühlst dich danach einfach großartig.'
+        );")
+
+        # DATES
+        connection.exec("INSERT INTO date VALUES(
+            1,
+            0,
+            18,
+            30,
+            60,
+            1
+        );")
+        connection.exec("INSERT INTO date VALUES(
+            2,
+            3,
+            19,
+            00,
+            40,
+            1
+        );")
+        connection.exec("INSERT INTO date VALUES(
+            3,
+            1,
+            18,
+            00,
+            45,
+            2
+        );")
+        connection.exec("INSERT INTO date VALUES(
+            4,
+            5,
+            14,
+            00,
+            55,
+            2
+        );")
+
+        # DATE_LOCATION
+        connection.exec("INSERT INTO date_location VALUES(
+            1,
+            1
+        );")
+        connection.exec("INSERT INTO date_location VALUES(
+            1,
+            2
+        );")
+        connection.exec("INSERT INTO date_location VALUES(
+            2,
+            1
+        );")
+        connection.exec("INSERT INTO date_location VALUES(
+            2,
+            2
+        );")
+        connection.exec("INSERT INTO date_location VALUES(
+            3,
+            1
+        );")
+        connection.exec("INSERT INTO date_location VALUES(
+            3,
+            2
+        );")
+        connection.exec("INSERT INTO date_location VALUES(
+            4,
+            2
+        );")
+
+        # ABO
+        connection.exec("INSERT INTO abo VALUES(
+            1,
+            'Flex',
+            'Die Vertragslaufzeit der Mitgliedsverträge mit einer Mindestvertragslaufzeit unter 12 Monate verlängern sich jeweils um die online ausgewählte Laufzeit, wenn der „Mitgliedsvertrag“ nicht vom Mitglied oder von EASYFITNESS unter Einhaltung einer Kündigungsfrist von mindestens 1 Monat vor dem jeweiligen Vertragsende gekündigt wird. ',
+            39.90,
+            1
+        );")
+        connection.exec("INSERT INTO abo VALUES(
+            2,
+            'Service 12',
+            'Die Vertragslaufzeit der Mitgliedsverträge mit einer Mindestvertragslaufzeit unter 12 Monate verlängern sich jeweils um die online ausgewählte Laufzeit, wenn der „Mitgliedsvertrag“ nicht vom Mitglied oder von EASYFITNESS unter Einhaltung einer Kündigungsfrist von mindestens 1 Monat vor dem jeweiligen Vertragsende gekündigt wird. ',
+            29.90,
+            12
+        );")
+        connection.exec("INSERT INTO abo VALUES(
+            3,
+            'Service 24',
+            'Die Vertragslaufzeit der Mitgliedsverträge mit einer Mindestvertragslaufzeit unter 12 Monate verlängern sich jeweils um die online ausgewählte Laufzeit, wenn der „Mitgliedsvertrag“ nicht vom Mitglied oder von EASYFITNESS unter Einhaltung einer Kündigungsfrist von mindestens 1 Monat vor dem jeweiligen Vertragsende gekündigt wird. ',
+            25.90,
+            24
+        );")
+
+        # MEMBER
+        connection.exec("INSERT INTO member VALUES(
+            1,
+            0,
+            190,
+            75,
+            4,
+            'Fußball',
+            '',
+            'Gewichtszunahme',
+            '2',
+            '2020-01-01',
+            2
+        );")
+        connection.exec("INSERT INTO member VALUES(
+            2,
+            1,
+            190,
+            75,
+            4,
+            'Fußball',
+            '',
+            'Gewichtszunahme',
+            '2'
+        );")
+        connection.exec("INSERT INTO member VALUES(
+            3,
+            2,
+            190,
+            75,
+            4,
+            'Fußball',
+            '',
+            'Gewichtszunahme',
+            '2'
+        );")
+
+        # TREATMENTREQUEST
+        connection.exec("INSERT INTO treatmentrequest VALUES(
+            1,
+            '2020-05-23',
+            'Verletzung am Fuß',
+            1
+        );")
+
+        # TRAININGPLANREQUEST
+        connection.exec("INSERT INTO trainingplanrequest VALUES(
+            1,
+            '2020-05-23',
+            1
+        );")
+
+        # TREATMENTNOTE
+        connection.exec("INSERT INTO treatmentnote VALUES(
+            1,
+            '2020-02-17',
+            'Er stellt sich ziemlich an...',
+            1
+        );")
+
+        # TRAININGPLAN
+        connection.exec("INSERT INTO trainingplan VALUES(
+            1,
+            'Fit mit 2 Übungen',
+            'Siehe Titel',
+            1
+        );")
+
+        # EXERCISE
+        connection.exec('INSERT INTO exercise VALUES(
+            1,
+            1,
+            3,
+            10
+        );')
+        connection.exec('INSERT INTO exercise VALUES(
+            1,
+            2,
+            3,
+            10
+        );')
+
+    rescue PG::Error => e
+        logger.warn e.message 
+    ensure
+        connection.close if connection
+    end
 
 end
 
 def drop_all_tables
     begin
         # Initialize connection variables.
-        host = String('localhost')
-        database = String('mydb')
+        host = String('database')
+        database = String('fitnesscenter')
         user = String('postgres')
         password = String('1234')
     
         # Initialize connection object.
         connection = PG::Connection.new(:host => host, :user => user, :dbname => database, :port => '5432', :password => password)
-        puts 'Successfully created connection to database'
+        logger.warn 'Successfully created connection to database'
 
-        puts 'DROPPING ALL TABLES'    # LOCATION
-        puts 'drop location...'
+        logger.warn 'DROPPING ALL TABLES'    # LOCATION
+        logger.warn 'drop location...'
         connection.exec('DROP TABLE IF EXISTS location CASCADE')
     
         # DEVICE
-        puts 'drop device...'
+        logger.warn 'drop device...'
         connection.exec('DROP TABLE IF EXISTS device CASCADE')
     
         # COURSE
-        puts 'drop course...'
+        logger.warn 'drop course...'
         connection.exec('DROP TABLE IF EXISTS course CASCADE')
     
         # ABO
-        puts 'drop abo...'
+        logger.warn 'drop abo...'
         connection.exec('DROP TABLE IF EXISTS abo CASCADE')
     
         # MUSCLE
-        puts 'drop muscle...'
+        logger.warn 'drop muscle...'
         connection.exec('DROP TABLE IF EXISTS muscle CASCADE')
 
     rescue PG::Error => e
-        puts e.message 
+        logger.warn e.message 
     ensure
         connection.close if connection
     end
