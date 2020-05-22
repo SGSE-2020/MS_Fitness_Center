@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+    frontend:
+        build: ./frontend/webserver/
+        ports: 
+            - 8080:80
+        volumes:
+            - /app/node_modules
+    backend:
+        build: ./backend/
+        ports: 
+            - 3030:3030
+            - 50051:50051
+        depends_on: 
+            - database
+    database:
+        image: postgres
+        restart: always
+        ports:
+            - "5432:5432"
+        environment:
+            - POSTGRES_DB=mydb  
+            - POSTGRES_PASSWORD=1234
+            - POSTGRES_USER=postgres

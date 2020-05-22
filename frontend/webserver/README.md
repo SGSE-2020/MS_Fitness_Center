@@ -36,5 +36,5 @@ docker build . -t fitness_center_frontend
 ```
 
 ``` bash
-docker run -d -p fitness_center_frontend
+docker run -d -p 8080:80 fitness_center_frontend
 ```
