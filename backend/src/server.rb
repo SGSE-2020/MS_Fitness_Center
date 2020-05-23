@@ -4,6 +4,7 @@ require_relative 'grpc_server'
 require_relative 'psql_database'
 require 'sinatra'
 require 'logger'
+require 'set'
 
 logger = Logger.new('/proc/1/fd/1')
 logger.formatter = proc do |severity, datetime, progname, msg|
@@ -61,32 +62,52 @@ class API < Sinatra::Base
     end
 
     get '/devices' do
-        [
-            {
-                name: 'Butterfly', 
-                description: 'Some fancy work', 
-                locations: [
-                    {name: 'Smart City'},
-                    {name: 'Smart City2'}
-                ],
-                muscles: [
-                    {name: "Großer Rückenmuskel"},
-                    {name: "Brustmuskel"}
-                ],
-            },
-            {
-                name: 'Butterflyer', 
-                description: 'Some fancy work', 
-                locations: [
-                    {name: 'Smart City'},
-                    {name: 'Smart City2'}
-                ],
-                muscles: [
-                    {name: "Großer Rückenmuskel"},
-                    {name: "Brustmuskel"}
-                ],
-            },
-        ].to_json
+        result = fetch_from_database("SELECT device.id, device.name, device.description, muscle.name AS muscle, location.name AS location
+        FROM device 
+            INNER JOIN device_muscle ON device.id = device_muscle.device_id
+            INNER JOIN muscle ON device_muscle.muscle_id = muscle.id
+            INNER JOIN location_device ON device.id = location_device.device_id
+            INNER JOIN location ON location_device.location_id = location.id")
+        if result == '' then
+            return [].to_json()
+        end
+
+        logger = Logger.new('/proc/1/fd/1')
+        logger.formatter = proc do |severity, datetime, progname, msg|
+            "api: #{msg}\n"
+        end
+
+        data = []
+        result.each do |row|
+            found = nil
+            data.each do |entry|
+                if entry[:id].eql? row['id'] then
+                    found = entry
+                    logger.warn 'found'
+                end
+            end
+            if found == nil then
+                data.append({
+                    id: row['id'], 
+                    name: row['name'], 
+                    description: row['description'], 
+                    locations: [
+                        {name: row['location']}
+                    ], 
+                    muscles: [
+                        {name: row['muscle']}
+                    ]
+                })
+            else
+                if !found[:locations].include?({name: row['location']}) then
+                    found[:locations].append({name: row['location']})
+                end
+                if !found[:muscles].include?({name: row['muscle']}) then
+                    found[:muscles].append({name: row['muscle']})
+                end
+            end
+        end
+        data.to_json
     end
 
     get '/courses' do
