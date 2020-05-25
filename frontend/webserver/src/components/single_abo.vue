@@ -16,8 +16,8 @@ export default {
   props: {
       aboname: String,
       abodescription: String,
-      abocost: Number,
-      aboterms: Number,
+      abocost: String,
+      aboterms: String,
       abodivider: Boolean
   }
 }

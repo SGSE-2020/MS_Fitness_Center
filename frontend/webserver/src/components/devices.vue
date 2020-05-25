@@ -1,7 +1,7 @@
 <template>
   <div class="contentdiv">
     <h1>Geräte</h1>
-    <Device v-for="dev in alldevices" :key=dev.name 
+    <Device v-for="dev in alldevices" :key=dev.id 
       :devicename=dev.name 
       :devicedescription=dev.description 
       :devicemuscle=dev.muscles 

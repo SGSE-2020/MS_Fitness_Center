@@ -4,7 +4,7 @@
     <p v-html='message'></p>
     <hr class='divider'>
     <h1>Standorte</h1>
-    <Location v-for='loc in locations' :key=loc.name :locname=loc.name :locdescription=loc.description :locstreet=loc.street :locplace=loc.place />
+    <Location v-for='loc in locations' :key=loc.id :locname=loc.name :locdescription=loc.description :locstreet=loc.street :locplace=loc.place />
     <span v-if='locations.length === 0'>
       Keine Standorte bekannt
     </span>

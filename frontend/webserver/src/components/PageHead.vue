@@ -41,7 +41,7 @@ export default {
         text: 'Abos',
         page: '/abo'
        }
-      ]
+      ],
     }
   }
 }

@@ -6,10 +6,10 @@
         <span class="header">Montag</span><span class="header">Dienstag</span><span class="header">Mittwoch</span><span class="header">Donnerstag</span><span class="header">Freitag</span><span class="header">Samstag</span><span class="header">Sonntag</span>
     </div>
     <div id=table_content>
-        <span class="dateelem" v-for="c in coursedays" :key="c"> 
-            <div class="singleentry" v-for="date in c" :key="date.hour+date.duration">
+        <span class="dateelem" v-for="c in coursedays" :key="c.id"> 
+            <div class="singleentry" v-for="date in c" :key="date.id">
                 <p class="singletext">{{ date.hour }}:{{ date.minutes }} Uhr,<br> {{ date.duration }} Min, </p>
-                <p class="singletext" v-for="loc in date.locations" :key="loc.name"><i>{{ loc.name }}<span v-if="loc !== date.locations[date.locations.length-1]">, </span></i></p>
+                <p class="singletext" v-for="loc in date.locations" :key="loc.id"><i>{{ loc.name }}<span v-if="loc !== date.locations[date.locations.length-1]">, </span></i></p>
                 <hr class="divider" v-if="date !== c[c.length-1]">
             </div>
         </span>

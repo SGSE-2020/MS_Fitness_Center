@@ -1,7 +1,7 @@
 <template>
   <div class="contentdiv">
     <h1>Kurse</h1>
-    <Course v-for="cou in allcourses" :key="cou.name" 
+    <Course v-for="cou in allcourses" :key="cou.id" 
       :coursename="cou.name"
       :coursedescription="cou.description"
       :coursedays="cou.dates"
@@ -41,6 +41,11 @@ export default {
             var minutes = days[current_curse.dates[c].day].minutes
             if (minutes < 10) {
               days[current_curse.dates[c].day].minutes = new String(minutes).padStart(2, '0')
+            }
+          }
+          for (var i = 0; i < 7; i++) {
+            if (days[i].length == 0) {
+              days[i].push({id: -i})
             }
           }
           this.allcourses[course].dates = days

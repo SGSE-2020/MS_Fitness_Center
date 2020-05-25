@@ -5,7 +5,7 @@
       :aboname=abo.name
       :abodescription=abo.description
       :abocost=abo.costs
-      :aboterms=abo.term
+      :aboterms=abo.terms
       :abodivider="(abo!=abos[abos.length-1])"/>
     <span v-if="abos.length === 0">
       Keine Geräte bekannt
