@@ -1,4 +1,5 @@
 <template>
+<div id="overall">
   <div class="contentdiv">
     <h1>Profil</h1>
     <h2>Persönliche Daten</h2>
@@ -17,7 +18,53 @@
         <td>E-mail:</td><td>{{ userdata.personal_data.mail }}</td>
       </tr>
     </table>
+
+    <h2>Physiologische Daten</h2>
+    <table>
+      <tr>
+        <td>Größe:</td><td>{{ userdata.physical_data.height }}</td>
+      </tr>
+      <tr>
+        <td>Gewicht:</td><td>{{ userdata.physical_data.weight }}</td>
+      </tr>
+      <tr>
+        <td>Leistungsniveau:</td><td>{{ userdata.physical_data.performance_level }}</td>
+      </tr>
+      <tr>
+        <td>Aktivitäten:</td><td>{{ userdata.physical_data.other_activitys }}</td>
+      </tr>
+      <tr>
+        <td>Erkrankungen:</td><td>{{ userdata.physical_data.diseases }}</td>
+      </tr>
+      <tr>
+        <td>Ziel:</td><td>{{ userdata.physical_data.goal }}</td>
+      </tr>
+      <tr>
+        <td>Verfügbare Zeit:</td><td>{{ userdata.physical_data.aviable_time }}</td>
+      </tr>
+    </table>
+
+    <h2>Abo Infotmationen</h2>
+    <table>
+      <tr>
+        <td>Abo:</td><td>{{ userdata.abo_information.abo.name }}</td>
+      </tr>
+      <tr>
+        <td>Startdatum:</td><td>{{ userdata.abo_information.abo_start }}</td>
+      </tr>
+      <tr>
+        <td>Kosten:</td><td>{{ userdata.abo_information.abo.costs }}</td>
+      </tr>
+      <tr>
+        <td>Laufzeit:</td><td>{{ userdata.abo_information.abo.term }}</td>
+      </tr>
+    </table>
+    <router-link id="edit" to='/profile/edit'>
+      <img src="../assets/bearbeiten.svg">
+    </router-link>
+    <br>
   </div>
+</div>
 </template>
 
 <script>
@@ -47,7 +94,22 @@ table {
   width: 100%;
   margin-top: 20px;
 }
+td {
+  width: 50%;
+}
 tr {
   padding: 8px;
 }
+#overall {
+    position: relative;
+}
+#edit {
+  width: 50px;
+  height: 50px;
+  position: absolute; top:10px; right:15px;
+}
+#edit img {
+  width: 50px;
+  height: 50px;
+} 
 </style>

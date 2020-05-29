@@ -7,11 +7,13 @@
         <th>Name</th><th>Rolle</th>
       </tr>
       <tr class="bodytr" v-for="member in members" :key="member.id">
-        <td> {{ member.name }} </td><td> {{member.role}} </td>
+        <td> {{ member.name }} </td><td> {{ roles[parseInt(member.role)] }} </td>
       </tr>
     </table>
-
-    <img id="adduser" src="../assets/kontakt.svg">
+    
+    <router-link id="adduser" to='/members/add'>
+      <img src="../assets/kontakt.svg">
+    </router-link>
     <router-link id="trainingplan" to='/requests/trainingplan'>
       <img src="../assets/ausbildung.svg">
     </router-link>
@@ -28,7 +30,10 @@ import api_config from '../../config/api_config'
 export default {
   name: 'Members',
   data() {
-    return {members: []}
+    return {
+      members: [],
+      roles: ['Kunde', 'Trainer', 'Physio']
+    }
   },
   created() {
     fetch(new String("http://").concat(api_config.url, ':', api_config.port, "/members"))

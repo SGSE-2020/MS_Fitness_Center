@@ -128,14 +128,17 @@ class API < Sinatra::Base
             data.append(row)
         end
         
-        logger.warn data
-        logger.warn data.to_json
         data.to_json
     end
 
     get '/personal_data/:id' do |id|
+        result = fetch_from_database("SELECT member.id, member.role, member.height, member.weight, member.performance_level, member.other_activitys, member.diseases,
+        member.goal, member.time_aviability, member.abo_start, member.abo_id, abo.name AS abo_name, abo.costs AS abo_costs, abo.terms AS abo_terms
+        FROM member LEFT OUTER JOIN abo ON member.abo_id = abo.id WHERE member.id = #{id}")
+    
+        data = result[0]
         {
-            id: id,
+            id: data['id'],
             personal_data: {
                 name: 'Karl Marx', 
                 birthday: '18.04.1998', 
@@ -143,17 +146,22 @@ class API < Sinatra::Base
                 mail: 'funy@rly.com',
             },
             physical_data: {
-                height: 190,
-                weight: 180,
-                performance_level: 5,
-                other_activitys: 'Sports',
-                diseases: ['Nothing'],
-                goal: 'Marathon',
-                aviable_time: 2,
+                height: data['height'],
+                weight: data['weight'],
+                performance_level: data['performance_level'],
+                other_activitys: data['other_activitys'],
+                diseases: data['diseases'],
+                goal: data['goal'],
+                aviable_time: data['time_aviability'],
             },
             abo_information: {
-                abo: {name: 'Sparpreis', description: 'Supper viel sparen', costs: 12.99, term: 24},
-                abo_start: '20.04.2009',
+                abo: {
+                    id: data['abo_id'],
+                    name: data['abo_name'],
+                    costs: data['abo_costs'], 
+                    term: data['abo_terms']
+                },
+                abo_start: data['abo_start'],
             }
         }.to_json
     end
@@ -171,22 +179,49 @@ class API < Sinatra::Base
     end
 
     get '/members' do
-        [
-            {id: 24, name: 'Karl Marx', role: 'Kunde'},
-            {id: 42, name: 'Karl Marxnicht', role: 'Trainer'},
-        ].to_json
+        result = fetch_from_database("SELECT id, role FROM member")
+        data = []
+
+        # TODO: fetch name
+        result.each do |row|
+            data.append({
+                id: row['id'],
+                name: "Karl Marx",
+                role: row['role']
+            })
+        end
+        data.to_json
     end
 
     get '/requests/trainingplan' do
-        [
-            {id: 24, name: 'Karl Marx', day: '20.04.2020'}
-        ].to_json
+        result = fetch_from_database("SELECT * FROM trainingplanrequest")
+        data = []
+
+        # TODO: fetch name
+        result.each do |row|
+            data.append({
+                id: row['id'],
+                name: "Karl Marx",
+                day: row['request_date']
+            })
+        end
+        data.to_json
     end
 
     get '/requests/treatment' do
-        [
-            {id: 24, name: 'Karl Marx', day: '20.04.2020'}
-        ].to_json
+        result = fetch_from_database("SELECT * FROM treatmentrequest")
+        data = []
+
+        # TODO: fetch name
+        result.each do |row|
+            data.append({
+                id: row['id'],
+                name: "Karl Marx",
+                day: row['request_date'],
+                note: row['note']
+            })
+        end
+        data.to_json
     end
 
     get '/trainingplan/:id' do |id|
