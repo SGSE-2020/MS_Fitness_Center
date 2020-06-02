@@ -12,29 +12,10 @@ logger.formatter = proc do |severity, datetime, progname, msg|
 end
 
 logger.warn('Insert sample data')
+init_db
 insert_sample_data
 
 class API < Sinatra::Base
-
-    def fetch_from_database(request) 
-        result = ''
-        begin
-            # Initialize connection variables.
-            host = String('database')
-            database = String('fitnesscenter')
-            user = String('postgres')
-            password = String('1234')
-            connection = PG::Connection.new(:host => host, :user => user, :dbname => database, :port => '5432', :password => password)
-
-            result = connection.exec(request)
-
-        rescue PG::Error => e
-            logger.warn e.message 
-        ensure
-            connection.close if connection
-        end
-        result
-    end
 
     get '/' do
         'Welcome to the Sinatra API test'
@@ -134,7 +115,12 @@ class API < Sinatra::Base
     get '/personal_data/:id' do |id|
         result = fetch_from_database("SELECT member.id, member.role, member.height, member.weight, member.performance_level, member.other_activitys, member.diseases,
         member.goal, member.time_aviability, member.abo_start, member.abo_id, abo.name AS abo_name, abo.costs AS abo_costs, abo.terms AS abo_terms
-        FROM member LEFT OUTER JOIN abo ON member.abo_id = abo.id WHERE member.id = #{id}")
+        FROM member LEFT OUTER JOIN abo ON member.abo_id = abo.id WHERE member.id = '#{id}'")
+
+        logger = Logger.new('/proc/1/fd/1')
+        logger.formatter = proc do |severity, datetime, progname, msg|
+            "api: #{msg}\n"
+        end
     
         data = result[0]
         {
@@ -245,5 +231,52 @@ class API < Sinatra::Base
             {date: '02.03.2020', note: 'He was to late'},
         ].to_json
     end
+
+    post '/requests/trainingplan' do
+
+        data = nil
+        begin
+            data = JSON.parse(request.body.read)
+          rescue
+            halt 400, { message:'Invalid JSON' }.to_json
+          end
+
+        post_to_database("INSERT INTO trainingplanrequest (request_date, member_id) VALUES(
+            '#{data["date"]}',
+            #{data["id"]}
+        );")
+
+        status 201
+        { message: 'Insertions was successfull' }.to_json
+    end
+
+    post '/requests/treatment' do
+        logger = Logger.new('/proc/1/fd/1')
+        logger.formatter = proc do |severity, datetime, progname, msg|
+            "api: #{msg}\n"
+        end
+
+        data = nil
+        begin
+            data = JSON.parse(request.body.read)
+        rescue
+            halt 400, { message:'Invalid JSON' }.to_json
+        end
+
+        if data["note"] == nil then
+            data["note"] = ""
+        end
+
+        logger.warn data
+        post_to_database("INSERT INTO treatmentrequest (request_date, note, member_id) VALUES(
+            '#{data["date"]}',
+            '#{data["note"]}',
+            #{data["id"]}
+        );")
+
+        status 201
+        { message: 'Insertions was successfull' }.to_json
+    end
+        
 end
 

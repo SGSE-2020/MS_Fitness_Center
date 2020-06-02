@@ -9,6 +9,7 @@ require 'grpc'
 require 'multi_json'
 require 'route_fitness_center_services_pb'
 require 'logger'
+require_relative 'psql_database'
 
 logger = Logger.new('/proc/1/fd/1')
 logger.formatter = proc do |severity, datetime, progname, msg|
@@ -24,13 +25,28 @@ class ServerImpl < Routeguide::FitnessCenter::Service
     end
 
     def request_training_plan(request, _call)
-        puts request
-        puts request.date
-        Confirmation.new(code: 404, description: "Not Implemented yet")
+        result = post_to_database("INSERT INTO trainingplanrequest (request_date, member_id) VALUES(
+            '#{request.date.year}-#{request.date.month}-#{request.date.day}',
+            #{request.member_id}
+        );")
+        if result == '' then
+            Confirmation.new(code: 200, description: "Succsessfullly added")
+        else
+            Confirmation.new(code: 400, description: result)
+        end
     end
 
     def request_physio_appointment(request, _call)
-        Confirmation.new(code: 404, description: "Not Implemented yet")
+        result = post_to_database("INSERT INTO treatmentrequest (request_date, note, member_id) VALUES(
+            '#{request.date.year}-#{request.date.month}-#{request.date.day}',
+            '#{request.note}',
+            #{request.member_id}
+        );")
+        if result == '' then
+            Confirmation.new(code: 200, description: "Succsessfullly added")
+        else
+            Confirmation.new(code: 400, description: result)
+        end
     end
 end
 

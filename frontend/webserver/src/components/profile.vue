@@ -1,6 +1,10 @@
 <template>
 <div id="overall">
   <div class="contentdiv">
+    <div id="hold_buttons">
+      <button v-on:click="requestTP">Neuer Trainingsplan</button>
+      <button v-on:click="requestT">Behandlung</button>
+    </div>
     <h1>Profil</h1>
     <h2>Persönliche Daten</h2>
     <i>Die folgenden persönlichen Daten stammen aus dem Bürgerbüro und können an dieser Stelle nicht gändert werden!</i>
@@ -69,6 +73,7 @@
 
 <script>
 import api_config from '../../config/api_config'
+import router from '../router'
 
 export default {
   name: 'Profile',
@@ -81,6 +86,14 @@ export default {
       .then(json => {
         this.userdata = json
       })
+  },
+  methods: {
+    requestTP: function (event) {
+      router.push('/trainingplan/request')
+    },
+    requestT: function (event) {
+      router.push('/treatment/request')
+    }
   }
 }
 
@@ -112,4 +125,10 @@ tr {
   width: 50px;
   height: 50px;
 } 
+#hold_buttons {
+  float: right;
+}
+#hold_buttons button {
+  width: 170px;
+}
 </style>

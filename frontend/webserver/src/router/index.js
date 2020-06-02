@@ -11,6 +11,8 @@ import TrainingplanRequest from '@/components/trainingplan_requests'
 import TreatmentRequest from '@/components/treatment_requests'
 import EditPersonalData from '@/components/edit_personal_data'
 import AddMember from '@/components/add_member'
+import RequestTrainingplan from '@/components/request_trainingplan'
+import RequestTreatment from '@/components/request_treatment'
 
 Vue.use(Router)
 
@@ -70,6 +72,16 @@ export default new Router({
       path: '/members/add',
       name: 'AddMember',
       component: AddMember
+    },
+    {
+      path: '/trainingplan/request',
+      name: 'RequestTrainingplan',
+      component: RequestTrainingplan
+    },
+    {
+      path: '/treatment/request',
+      name: 'RequestTreatment',
+      component: RequestTreatment
     }
   ]
 })
