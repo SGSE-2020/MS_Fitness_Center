@@ -3,7 +3,7 @@ require 'logger'
 
 
 def fetch_from_database(request) 
-    logger = Logger.new('/proc/1/fd/1')
+    logger = Logger.new('./log')
     logger.formatter = proc do |severity, datetime, progname, msg|
         "psql: #{msg}\n"
     end
@@ -27,7 +27,7 @@ def fetch_from_database(request)
 end
 
 def post_to_database(request)
-    logger = Logger.new('/proc/1/fd/1')
+    logger = Logger.new('./log')
     logger.formatter = proc do |severity, datetime, progname, msg|
         "psql: #{msg}\n"
     end
@@ -52,7 +52,7 @@ def post_to_database(request)
 end
 
 def drop_all_tables
-    logger = Logger.new('/proc/1/fd/1')
+    logger = Logger.new('./log')
     logger.formatter = proc do |severity, datetime, progname, msg|
         "psql: #{msg}\n"
     end
@@ -136,7 +136,7 @@ end
 
 def init_db
 
-    logger = Logger.new('/proc/1/fd/1')
+    logger = Logger.new('./log')
     logger.formatter = proc do |severity, datetime, progname, msg|
         "psql: #{msg}\n"
     end
@@ -326,7 +326,7 @@ end
 
 def insert_sample_data
     begin
-        logger = Logger.new('/proc/1/fd/1')
+        logger = Logger.new('./log')
         logger.formatter = proc do |severity, datetime, progname, msg|
             "psqlSampleData: #{msg}\n"
         end

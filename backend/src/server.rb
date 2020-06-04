@@ -6,12 +6,14 @@ require 'sinatra'
 require 'logger'
 require 'set'
 
-logger = Logger.new('/proc/1/fd/1')
-logger.formatter = proc do |severity, datetime, progname, msg|
-    "api: #{msg}\n"
-end
+#logger = Logger.new('/proc/1/fd/1')
+#logger.formatter = proc do |severity, datetime, progname, msg|
+#    "api: #{msg}\n"
+#end
 
-logger.warn('Insert sample data')
+set :port, 8080
+
+#logger.warn('Insert sample data')
 init_db
 insert_sample_data
 
@@ -117,10 +119,10 @@ class API < Sinatra::Base
         member.goal, member.time_aviability, member.abo_start, member.abo_id, abo.name AS abo_name, abo.costs AS abo_costs, abo.terms AS abo_terms
         FROM member LEFT OUTER JOIN abo ON member.abo_id = abo.id WHERE member.id = '#{id}'")
 
-        logger = Logger.new('/proc/1/fd/1')
-        logger.formatter = proc do |severity, datetime, progname, msg|
-            "api: #{msg}\n"
-        end
+        #logger = Logger.new('/proc/1/fd/1')
+        #logger.formatter = proc do |severity, datetime, progname, msg|
+        #    "api: #{msg}\n"
+        #end
     
         data = result[0]
         {
@@ -251,10 +253,10 @@ class API < Sinatra::Base
     end
 
     post '/requests/treatment' do
-        logger = Logger.new('/proc/1/fd/1')
-        logger.formatter = proc do |severity, datetime, progname, msg|
-            "api: #{msg}\n"
-        end
+        #logger = Logger.new('/proc/1/fd/1')
+        #logger.formatter = proc do |severity, datetime, progname, msg|
+        #    "api: #{msg}\n"
+        #end
 
         data = nil
         begin
@@ -267,12 +269,12 @@ class API < Sinatra::Base
             data["note"] = ""
         end
 
-        logger.warn data
-        post_to_database("INSERT INTO treatmentrequest (request_date, note, member_id) VALUES(
-            '#{data["date"]}',
-            '#{data["note"]}',
-            #{data["id"]}
-        );")
+        #logger.warn data
+        #post_to_database("INSERT INTO treatmentrequest (request_date, note, member_id) VALUES(
+        #    '#{data["date"]}',
+        #    '#{data["note"]}',
+        #    #{data["id"]}
+        #);")
 
         status 201
         { message: 'Insertions was successfull' }.to_json

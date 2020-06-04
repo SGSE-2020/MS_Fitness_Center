@@ -11,7 +11,7 @@ require 'route_fitness_center_services_pb'
 require 'logger'
 require_relative 'psql_database'
 
-logger = Logger.new('/proc/1/fd/1')
+logger = Logger.new('./log')
 logger.formatter = proc do |severity, datetime, progname, msg|
     "grpc: #{msg}\n"
 end

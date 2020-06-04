@@ -1,0 +1,8 @@
+# Logfile created on 2020-06-04 16:22:29 +0200 by logger.rb/61378
+grpc: ==== GRPC startet wit PID 4976 ====
+psql: could not translate host name "database" to address: Name or service not known
+
+psql: could not translate host name "database" to address: Name or service not known
+
+psqlSampleData: could not translate host name "database" to address: Name or service not known
+
