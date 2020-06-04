@@ -13,6 +13,7 @@ import EditPersonalData from '@/components/edit_personal_data'
 import AddMember from '@/components/add_member'
 import RequestTrainingplan from '@/components/request_trainingplan'
 import RequestTreatment from '@/components/request_treatment'
+import Login from '@/components/login'
 
 Vue.use(Router)
 
@@ -82,6 +83,11 @@ export default new Router({
       path: '/treatment/request',
       name: 'RequestTreatment',
       component: RequestTreatment
+    },
+    {
+      path: '/login',
+      name: 'Login',
+      component: Login
     }
   ]
 })
