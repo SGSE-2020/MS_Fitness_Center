@@ -1,0 +1,26 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: ms-fitnesscenter
+  name: ms-fitnesscenter
+spec:
+  replicas: 1
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: ms-fitnesscenter
+    spec:
+      containers:
+      - image: ms-fitnesscenter-frontend
+        name: ms-fitnesscenter-frontend
+        ports:
+        - containerPort: 80
+      - image: ms-fitnesscenter-backend
+        name: ms-fitnesscenter-backend
+        ports:
+        - containerPort: 8080
+        - containerPort: 50051
+      restartPolicy: Always
+status: {}
