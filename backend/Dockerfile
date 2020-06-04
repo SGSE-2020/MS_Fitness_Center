@@ -12,6 +12,6 @@ COPY Gemfile Gemfile.lock /app/
 RUN bundle install
 
 ADD . /app/
-EXPOSE 3030
+EXPOSE 8080
 
-CMD ["bundle", "exec", "rackup", "--host", "0.0.0.0", "-p", "3030"]
+CMD ["bundle", "exec", "rackup", "--host", "0.0.0.0", "-p", "8080"]
