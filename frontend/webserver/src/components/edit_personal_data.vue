@@ -49,8 +49,26 @@ export default {
   },
   methods: {
     confirm: function (event) {
+      console.log("hey")
+      fetch(new String("http://").concat(api_config.url, ':', api_config.port, "/personal_data"), {
+          method: "POST",
+          body: JSON.stringify({
+            height: this.userdata.physical_data.height,
+            weight: this.userdata.physical_data.weight,
+            performance_level: this.userdata.physical_data.performance_level,
+            other_activitys: this.userdata.physical_data.other_activitys,
+            diseases: this.userdata.physical_data.diseases,
+            goal: this.userdata.physical_data.goal,
+            time_aviability: this.userdata.physical_data.aviable_time,
+            token: "XYZ", // TODO: token for authentification
+            id: "1" //TODO get id
+          })}).then(res => {
+          alert('Antrag erfolgreich abgeschickt')
+            // `event` is the native DOM event
+        }).catch(function() {
+          alert('There was a problem')
+    });
       // add validation
-      alert('Änderungen erfolgreich engefügt')
       // `event` is the native DOM event
       if (event) {
         router.push('/profile')

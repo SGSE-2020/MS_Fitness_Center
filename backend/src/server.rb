@@ -248,7 +248,7 @@ class API < Sinatra::Base
             #{data["id"]}
         );")
 
-        status 201
+        status 200
         { message: 'Insertions was successfull' }.to_json
     end
 
@@ -270,15 +270,38 @@ class API < Sinatra::Base
         end
 
         #logger.warn data
-        #post_to_database("INSERT INTO treatmentrequest (request_date, note, member_id) VALUES(
-        #    '#{data["date"]}',
-        #    '#{data["note"]}',
-        #    #{data["id"]}
-        #);")
+        post_to_database("INSERT INTO treatmentrequest (request_date, note, member_id) VALUES(
+            '#{data["date"]}',
+            '#{data["note"]}',
+            #{data["id"]}
+        );")
 
-        status 201
+        status 200
         { message: 'Insertions was successfull' }.to_json
     end
+
+    post '/personal_data' do
+        data = nil
+        begin
+            data = JSON.parse(request.body.read)
+        rescue
+            halt 400, { message:'Invalid JSON' }.to_json
+        end
+        # TODO: validate by token
         
+        post_to_database("UPDATE member
+        SET 
+            height = #{data['height']}, 
+            weight = #{data['weight']}, 
+            performance_level = #{data['performance_level']}, 
+            other_activitys = '#{data['other_activitys']}',
+            diseases = '#{data['diseases']}',
+            goal = '#{data['goal']}',
+            time_aviability = #{data['time_aviability']}
+        WHERE id = '#{data['id']}';")
+        status 200
+        { message: 'Insertions was successfull' }.to_json
+
+    end
 end
 

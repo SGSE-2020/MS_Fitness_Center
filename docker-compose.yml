@@ -4,7 +4,7 @@ services:
     frontend:
         build: ./frontend/webserver/
         ports: 
-            - 2020:80
+            - 80:80
         volumes:
             - /app/node_modules
     backend:
