@@ -10,3 +10,8 @@ gem 'grpc'
 gem 'grpc-tools'
 gem 'multi_json'
 gem 'pg'
+gem 'rack'
+group :test do
+    gem "rspec"
+    gem "rack-test"
+ end
