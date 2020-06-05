@@ -49,7 +49,6 @@ export default {
   },
   methods: {
     confirm: function (event) {
-      console.log("hey")
       fetch(new String("http://").concat(api_config.url, ':', api_config.port, "/personal_data"), {
           method: "POST",
           body: JSON.stringify({

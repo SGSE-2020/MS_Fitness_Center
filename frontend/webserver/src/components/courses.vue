@@ -29,6 +29,7 @@ export default {
       .then(response => response.json())
       .then(json => {
         this.allcourses = json
+        console.log(json)
         for (var course = 0; course < this.allcourses.length; course++) {
           var days = []
           for (var i = 0; i < 7; i++) {
@@ -41,11 +42,6 @@ export default {
             var minutes = days[current_curse.dates[c].day].minutes
             if (minutes < 10) {
               days[current_curse.dates[c].day].minutes = new String(minutes).padStart(2, '0')
-            }
-          }
-          for (var i = 0; i < 7; i++) {
-            if (days[i].length == 0) {
-              days[i].push({id: -i})
             }
           }
           this.allcourses[course].dates = days
