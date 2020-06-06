@@ -24,7 +24,7 @@ export default {
   },
   created() {
     console.log("right file")
-    fetch(new String("http://").concat(api_config.url, "/requests/treatment"))
+    fetch(api_config.url.concat("/requests/treatment"))
       .then(response => response.json())
       .then(json => {
         this.requests = json

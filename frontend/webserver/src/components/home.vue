@@ -28,14 +28,14 @@ export default {
     }
   },
   created() {
-    fetch(new String('http://').concat(api_config.url, '/welcome'))
+    fetch(api_config.url.concat('/welcome'))
       .then(response => response.json())
       .then(json => {
         this.title = json.title
         this.message = json.text.split('\\n').join('<br />')
       })
 
-    fetch(new String('http://').concat(api_config.url, '/locations'))
+    fetch(api_config.url.concat('/locations'))
       .then(response => response.json())
       .then(json => {
         this.locations = json
