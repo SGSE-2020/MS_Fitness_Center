@@ -104,4 +104,15 @@ RSpec.describe API do
 
       it "displays a list of abo" 
     end
+
+
+    context "GET to /anamnesis/:id" do
+      let(:response) { get "/anamnesis/1" }
+
+      it "returns status 200 OK" do
+        expect(response.status).to eq 200
+      end
+
+      it "displays a list of abo" 
+    end
 end
