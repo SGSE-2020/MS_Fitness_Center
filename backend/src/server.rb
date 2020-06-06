@@ -261,8 +261,8 @@ class API < Sinatra::Base
 
     get '/treatment/note/:id' do |id|
         [ 
-            {date: '09.03.2020', note: 'No progress at all'},
-            {date: '02.03.2020', note: 'He was to late'},
+            {id: 1, date: '09.03.2020', note: 'No progress at all'},
+            {id: 2, date: '02.03.2020', note: 'He was to late'},
         ].to_json
     end
 
