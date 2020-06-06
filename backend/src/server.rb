@@ -217,7 +217,7 @@ class API < Sinatra::Base
         # TODO: fetch name
         result.each do |row|
             data.append({
-                id: row['id'],
+                id: row['id'].to_i,
                 name: "Karl Marx",
                 day: row['request_date']
             })
