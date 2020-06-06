@@ -93,4 +93,15 @@ RSpec.describe API do
         expect(response).to match_response_schema("abo")
       end
     end
+
+
+    context "GET to /personal_data/:id" do
+      let(:response) { get "/personal_data/1" }
+
+      it "returns status 200 OK" do
+        expect(response.status).to eq 200
+      end
+
+      it "displays a list of abo" 
+    end
 end
