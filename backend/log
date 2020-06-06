@@ -677,3 +677,10 @@ psql: could not translate host name "database" to address: Name or service not k
 
 psqlSampleData: could not translate host name "database" to address: Name or service not known
 
+grpc: ==== GRPC startet wit PID 27533 ====
+psql: could not translate host name "database" to address: Name or service not known
+
+psql: could not translate host name "database" to address: Name or service not known
+
+psqlSampleData: could not translate host name "database" to address: Name or service not known
+

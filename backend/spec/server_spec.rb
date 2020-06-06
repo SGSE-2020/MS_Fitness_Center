@@ -13,10 +13,6 @@ end
 RSpec.describe API do
     let(:app) { API.new }
 
-    before(:each) do
-      $database_config[:host] = 'localhost'
-    end
-
     context "GET to /locations" do
       let(:response) { get "/locations" }
 

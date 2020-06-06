@@ -8,7 +8,9 @@ RSpec.configure do |config|
   config.include Rack::Test::Methods
 
   config.before(:each) do
-    $db = []
+    $database_config[:host] = 'localhost'
+    init_db
+    insert_sample_data
   end 
 
   config.expect_with :rspec do |expectations|
