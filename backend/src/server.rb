@@ -199,9 +199,9 @@ class API < Sinatra::Base
         # TODO: fetch name
         result.each do |row|
             data.append({
-                id: row['id'],
+                id: row['id'].to_i,
                 name: "Karl Marx",
-                role: row['role']
+                role: row['role'].to_i
             })
         end
         data.to_json

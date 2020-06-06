@@ -115,4 +115,17 @@ RSpec.describe API do
 
       it "displays a list of abo" 
     end
+
+
+    context "GET to /members" do
+      let(:response) { get "/members" }
+
+      it "returns status 200 OK" do
+        expect(response.status).to eq 200
+      end
+
+      it "displays a list of members" do
+        expect(response).to match_response_schema("members")
+      end
+    end
 end
