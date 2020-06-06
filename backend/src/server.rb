@@ -33,6 +33,10 @@ class API < Sinatra::Base
 
     get '/locations' do
         result = fetch_from_database("SELECT name, street, place, description FROM location")
+        if result == '' then
+            return [].to_json()
+        end
+
         data = []
         result.each do |row|
             data.append({name: row['name'], street: row['street'], place: row['place'], description: row['description']})
@@ -105,6 +109,9 @@ class API < Sinatra::Base
 
     get '/abo' do
         result = fetch_from_database("SELECT * FROM abo")
+        if result == '' then
+            return [].to_json()
+        end
 
         data = []
         result.each do |row|
@@ -118,6 +125,9 @@ class API < Sinatra::Base
         result = fetch_from_database("SELECT member.id, member.role, member.height, member.weight, member.performance_level, member.other_activitys, member.diseases,
         member.goal, member.time_aviability, member.abo_start, member.abo_id, abo.name AS abo_name, abo.costs AS abo_costs, abo.terms AS abo_terms
         FROM member LEFT OUTER JOIN abo ON member.abo_id = abo.id WHERE member.id = '#{id}'")
+        if result == '' then
+            return {}.to_json()
+        end
 
         #logger = Logger.new('/proc/1/fd/1')
         #logger.formatter = proc do |severity, datetime, progname, msg|
@@ -168,6 +178,9 @@ class API < Sinatra::Base
 
     get '/members' do
         result = fetch_from_database("SELECT id, role FROM member")
+        if result == '' then
+            return [].to_json()
+        end
         data = []
 
         # TODO: fetch name
@@ -183,6 +196,9 @@ class API < Sinatra::Base
 
     get '/requests/trainingplan' do
         result = fetch_from_database("SELECT * FROM trainingplanrequest")
+        if result == '' then
+            return [].to_json()
+        end
         data = []
 
         # TODO: fetch name
@@ -198,6 +214,9 @@ class API < Sinatra::Base
 
     get '/requests/treatment' do
         result = fetch_from_database("SELECT * FROM treatmentrequest")
+        if result == '' then
+            return [].to_json()
+        end
         data = []
 
         # TODO: fetch name
