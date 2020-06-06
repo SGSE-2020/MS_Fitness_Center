@@ -1,5 +1,5 @@
 const api_config = {
-    url: "fitnesscenter.dvess.network/api",
+    url: "/api",
     port: ""
 };
 

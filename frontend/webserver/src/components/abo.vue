@@ -28,7 +28,7 @@ export default {
     }
   },
   created() {
-    fetch(new String("http://").concat(api_config.url, "/abo"))
+    fetch(api_config.url.concat("/abo"))
       .then(response => response.json())
       .then(json => {
         this.abos = json

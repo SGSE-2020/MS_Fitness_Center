@@ -26,7 +26,7 @@ export default {
     return {alldevices: []}
   },
   created() {
-    fetch(new String("http://").concat(api_config.url, "/devices"))
+    fetch(api_config.url.concat("/devices"))
       .then(response => response.json())
       .then(json => {
         this.alldevices = json

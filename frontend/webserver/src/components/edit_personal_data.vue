@@ -41,7 +41,7 @@ export default {
     return {userdata: []}
   },
   created() {
-    fetch(new String("http://").concat(api_config.url, "/personal_data/1"))
+    fetch(api_config.url.concat("/personal_data/1"))
       .then(response => response.json())
       .then(json => {
         this.userdata = json
@@ -49,7 +49,7 @@ export default {
   },
   methods: {
     confirm: function (event) {
-      fetch(new String("http://").concat(api_config.url, "/personal_data"), {
+      fetch(api_config.url.concat("/personal_data"), {
           method: "POST",
           body: JSON.stringify({
             height: this.userdata.physical_data.height,
