@@ -1,0 +1,32 @@
+{
+    "type": "array",
+    "items": [
+      {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "costs": {
+            "type": "number"
+          },
+          "terms": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "description",
+          "costs",
+          "terms"
+        ]
+      }
+    ]
+  }

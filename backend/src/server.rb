@@ -125,6 +125,9 @@ class API < Sinatra::Base
 
         data = []
         result.each do |row|
+            row["id"] = row["id"].to_i
+            row["costs"] = row["costs"].to_f
+            row["terms"] = row["terms"].to_i
             data.append(row)
         end
         
