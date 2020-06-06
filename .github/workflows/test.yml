@@ -1,0 +1,34 @@
+name: Test
+
+on: [push]
+
+jobs:
+    test:
+      runs-on: ubuntu-latest
+      services:
+        db:
+          image: postgres
+          restart: always
+          ports:
+            - 5432:5432
+          environment:
+            - POSTGRES_DB=fitnesscenter  
+            - POSTGRES_PASSWORD=1234
+            - POSTGRES_USER=postgres
+  
+      steps:
+        - uses: actions/checkout@v1
+        - name: Setup Ruby
+          uses: actions/setup-ruby@v1
+          with:
+            ruby-version: 2.5.1
+        - uses: borales/actions-yarn@v2.0.0
+          with:
+            cmd: install
+        - name: Build and run tests
+          run: |
+            cd backend
+            sudo apt-get -yqq install libpq-dev
+            gem install bundler
+            bundle install --jobs 4 --retry 3
+            rspec spec/server_spec.rb 
