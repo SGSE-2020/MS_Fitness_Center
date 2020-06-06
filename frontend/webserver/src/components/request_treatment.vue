@@ -29,7 +29,7 @@ export default {
     confirm: function (event) {
       // add validation
       if (this.date != null) {
-        fetch(new String("http://").concat(api_config.url, "/requests/treatment"), {
+        fetch(api_config.url.concat("/requests/treatment"), {
           method: "POST",
           body: JSON.stringify({id: 1, note: this.note, date: this.date})
         }).then(res => {
