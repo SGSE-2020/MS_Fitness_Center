@@ -81,7 +81,7 @@ export default {
     return {userdata: []}
   },
   created() {
-    fetch(new String("http://").concat(api_config.url, ':', api_config.port, "/personal_data/1"))
+    fetch(new String("http://").concat(api_config.url, "/personal_data/1"))
       .then(response => response.json())
       .then(json => {
         this.userdata = json
