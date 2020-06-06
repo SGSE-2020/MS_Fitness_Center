@@ -1,6 +1,13 @@
 require 'pg'
 require 'logger'
 
+$database_config = {
+    host: String('database'),
+    database: String('fitnesscenter'),
+    user: String('postgres'),
+    port: String('5432'),
+    password: String('1234')
+}
 
 def fetch_from_database(request) 
     logger = Logger.new('./log')
@@ -10,11 +17,7 @@ def fetch_from_database(request)
     result = ''
     begin
         # Initialize connection variables.
-        host = String('localhost')
-        database = String('fitnesscenter')
-        user = String('postgres')
-        password = String('1234')
-        connection = PG::Connection.new(:host => host, :user => user, :dbname => database, :port => '5432', :password => password)
+        connection = PG::Connection.new(:host => $database_config[:host], :user => $database_config[:user], :dbname => $database_config[:database], :port => $database_config[:port], :password => $database_config[:password])
 
         result = connection.exec(request)
 
@@ -36,11 +39,7 @@ def post_to_database(request)
     result = ''
     begin
         # Initialize connection variables.
-        host = String('database')
-        database = String('fitnesscenter')
-        user = String('postgres')
-        password = String('1234')
-        connection = PG::Connection.new(:host => host, :user => user, :dbname => database, :port => '5432', :password => password)
+        connection = PG::Connection.new(:host => $database_config[:host], :user => $database_config[:user], :dbname => $database_config[:database], :port => $database_config[:port], :password => $database_config[:password])
 
         connection.exec(request)
     rescue PG::Error => e
@@ -58,14 +57,9 @@ def drop_all_tables
         "psql: #{msg}\n"
     end
     begin
-        # Initialize connection variables.
-        host = String('database')
-        database = String('fitnesscenter')
-        user = String('postgres')
-        password = String('1234')
     
         # Initialize connection object.
-        connection = PG::Connection.new(:host => host, :user => user, :dbname => database, :port => '5432', :password => password)
+        connection = PG::Connection.new(:host => $database_config[:host], :user => $database_config[:user], :dbname => $database_config[:database], :port => $database_config[:port], :password => $database_config[:password])
         logger.warn 'Successfully created connection to database'
 
         logger.warn 'DROPPING ALL TABLES'    # LOCATION
@@ -144,14 +138,7 @@ def init_db
     begin
         drop_all_tables
 
-        # Initialize connection variables.
-        host = String('database')
-        database = String('fitnesscenter')
-        user = String('postgres')
-        password = String('1234')
-
-        # Initialize connection object.
-        connection = PG::Connection.new(:host => host, :user => user, :dbname => database, :port => '5432', :password => password)
+        connection = PG::Connection.new(:host => $database_config[:host], :user => $database_config[:user], :dbname => $database_config[:database], :port => $database_config[:port], :password => $database_config[:password])
         logger.warn 'Successfully created connection to database'
 
         logger.warn 'Init database:'
@@ -332,14 +319,7 @@ def insert_sample_data
             "psqlSampleData: #{msg}\n"
         end
 
-        # Initialize connection variables.
-        host = String('database')
-        database = String('fitnesscenter')
-        user = String('postgres')
-        password = String('1234')
-    
-        # Initialize connection object.
-        connection = PG::Connection.new(:host => host, :user => user, :dbname => database, :port => '5432', :password => password)
+        connection = PG::Connection.new(:host => $database_config[:host], :user => $database_config[:user], :dbname => $database_config[:database], :port => $database_config[:port], :password => $database_config[:password])
         logger.warn 'Successfully created connection to database'
 
         logger.warn 'INSERT EXAMPLE DATA'    # LOCATION
