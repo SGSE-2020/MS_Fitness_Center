@@ -25,7 +25,7 @@ export default {
     }
   },
   created() {
-    fetch(new String("http://").concat(api_config.url, ':', api_config.port, "/courses"))
+    fetch(new String("http://").concat(api_config.url, "/courses"))
       .then(response => response.json())
       .then(json => {
         this.allcourses = json

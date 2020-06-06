@@ -36,7 +36,7 @@ export default {
     }
   },
   created() {
-    fetch(new String("http://").concat(api_config.url, ':', api_config.port, "/members"))
+    fetch(new String("http://").concat(api_config.url, "/members"))
       .then(response => response.json())
       .then(json => {
         this.members = json

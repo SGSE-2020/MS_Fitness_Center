@@ -1,6 +1,6 @@
 const api_config = {
-    url: "fitnesscenter.dvess.network",
-    port: 8080
+    url: "fitnesscenter.dvess.network/api",
+    port: ""
 };
 
 export default api_config;
