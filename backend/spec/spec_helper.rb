@@ -7,7 +7,7 @@ require "json-schema"
 RSpec.configure do |config|
   config.include Rack::Test::Methods
 
-  config.before(:each) do
+  config.before(:all) do
     $database_config[:host] = 'localhost'
     init_db
     insert_sample_data
