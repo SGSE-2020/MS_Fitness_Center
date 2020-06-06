@@ -12,6 +12,7 @@ gem 'multi_json'
 gem 'pg'
 gem 'rack'
 group :test do
+    gem 'json-schema'
     gem "rspec"
     gem "rack-test"
  end

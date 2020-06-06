@@ -1,0 +1,14 @@
+{
+    "type": "array",
+    "items": {
+        "type": "object",
+        "properties" : {
+            "id": {"type": "integer"},
+            "name": {"type": "string"},
+            "street": {"type": "string"},
+            "place": {"type": "string"},
+            "description": {"type": "string"}
+        },
+        "required": ["id", "name", "street", "place", "description"]
+    }
+}

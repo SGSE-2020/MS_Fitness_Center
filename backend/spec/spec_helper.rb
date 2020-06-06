@@ -2,6 +2,7 @@ ENV['RACK_ENV'] = 'test'
 
 require "rack/test"
 require_relative "../src/server"
+require "json-schema"
 
 RSpec.configure do |config|
   config.include Rack::Test::Methods

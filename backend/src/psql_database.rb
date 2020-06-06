@@ -10,7 +10,7 @@ def fetch_from_database(request)
     result = ''
     begin
         # Initialize connection variables.
-        host = String('database')
+        host = String('localhost')
         database = String('fitnesscenter')
         user = String('postgres')
         password = String('1234')
@@ -20,6 +20,7 @@ def fetch_from_database(request)
 
     rescue PG::Error => e
         logger.warn e.message 
+        puts e.message
     ensure
         connection.close if connection
     end
