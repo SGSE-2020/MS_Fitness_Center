@@ -141,4 +141,17 @@ RSpec.describe API do
         expect(response).to match_response_schema("requests_trainingplan")
       end
     end
+
+
+    context "GET to /requests/treatment" do
+      let(:response) { get "/requests/treatment" }
+
+      it "returns status 200 OK" do
+        expect(response.status).to eq 200
+      end
+
+      it "displays a list of requests" do
+        expect(response).to match_response_schema("requests_treatment")
+      end
+    end
 end
