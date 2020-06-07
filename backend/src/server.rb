@@ -11,7 +11,7 @@ require 'set'
 #    "api: #{msg}\n"
 #end
 
-set :port, 8080
+
 
 #logger.warn('Insert sample data')
 init_db
@@ -19,6 +19,9 @@ insert_sample_data
 
 class API < Sinatra::Base
 
+    set :port, 8080
+    set :protection, :except => [:frame_options, :json_csrf]
+    
     get '/' do
         'Welcome to the Sinatra API test'
         puts 'test'

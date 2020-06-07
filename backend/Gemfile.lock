@@ -54,6 +54,7 @@ DEPENDENCIES
   multi_json
   pg
   rack
+  rack-protection
   rack-test
   rspec
   sinatra
