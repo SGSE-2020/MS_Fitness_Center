@@ -1970,3 +1970,40 @@ psql: location_device
 psql: device_muscle
 psqlSampleData: Successfully created connection to database
 psqlSampleData: INSERT EXAMPLE DATA
+grpc: ==== GRPC startet wit PID 7790 ====
+psql: could not translate host name "database" to address: Name or service not known
+
+psql: could not translate host name "database" to address: Name or service not known
+
+psqlSampleData: could not translate host name "database" to address: Name or service not known
+
+grpc: ==== GRPC startet wit PID 4401 ====
+psql: could not translate host name "database" to address: Name or service not known
+
+psql: could not translate host name "database" to address: Name or service not known
+
+psqlSampleData: could not translate host name "database" to address: Name or service not known
+
+grpc: ==== GRPC startet wit PID 4473 ====
+psql: could not translate host name "database" to address: Name or service not known
+
+psql: could not translate host name "database" to address: Name or service not known
+
+psqlSampleData: could not translate host name "database" to address: Name or service not known
+
+grpc: ==== GRPC startet wit PID 4543 ====
+psql: could not translate host name "database" to address: Name or service not known
+
+psql: could not translate host name "database" to address: Name or service not known
+
+psqlSampleData: could not translate host name "database" to address: Name or service not known
+
+grpc: ==== GRPC startet wit PID 4611 ====
+psql: could not translate host name "database" to address: Name or service not known
+
+psql: could not translate host name "database" to address: Name or service not known
+
+psqlSampleData: could not translate host name "database" to address: Name or service not known
+
+psql: could not translate host name "database" to address: Name or service not known
+
