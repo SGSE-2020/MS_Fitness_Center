@@ -28,7 +28,7 @@ export default {
     }
   },
   created() {
-    fetch(api_config.url.concat('/welcome'))
+    fetch(api_config.url.concat('/welcome'), {referrer: ""})
       .then(response => response.json())
       .then(json => {
         this.title = json.title
