@@ -1,4 +1,4 @@
 require File.expand_path('./src/server.rb', File.dirname(__FILE__))
 
-disable :protection
+set :protection, :except => :json_csrf
 run API
