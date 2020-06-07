@@ -11,7 +11,7 @@ require 'set'
 #    "api: #{msg}\n"
 #end
 
-set :port, 8080
+
 
 #logger.warn('Insert sample data')
 init_db
@@ -19,6 +19,9 @@ insert_sample_data
 
 class API < Sinatra::Base
 
+    set :port, 8080
+    set :protection, :except => [:frame_options, :json_csrf]
+    
     get '/' do
         'Welcome to the Sinatra API test'
         puts 'test'
@@ -32,20 +35,30 @@ class API < Sinatra::Base
     # all getters
 
     get '/locations' do
-        result = fetch_from_database("SELECT name, street, place, description FROM location")
+        result = fetch_from_database("SELECT id, name, street, place, description FROM location")
         if result == '' then
             return [].to_json()
         end
 
         data = []
         result.each do |row|
-            data.append({name: row['name'], street: row['street'], place: row['place'], description: row['description']})
+            data.append({
+                id: row['id'].to_i, 
+                name: row['name'], 
+                street: row['street'], 
+                place: row['place'], 
+                description: 
+                row['description']
+            })
         end
         data.to_json
     end
 
     get '/welcome' do
-        {title: 'Willkommen!', text: 'Nice to see you here!\nLorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.\n\n Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.'}.to_json
+        {
+            title: 'Willkommen!',
+            text: 'Nice to see you here!\nLorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.\n\n Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.'
+        }.to_json
     end
 
     get '/devices' do
@@ -64,14 +77,14 @@ class API < Sinatra::Base
             device_entries = result.select {|row| row['id'] == device['id']}
 
             locations = device_entries.uniq {|row| row['location_id']}
-            locations.map! {|location| {id: location['location_id'], name: location['location']}}
+            locations.map! {|location| {id: location['location_id'].to_i, name: location['location']}}
             device['locations'] = locations
 
             muscles = device_entries.uniq {|row| row['muscle_id']}
-            muscles.map! {|muscle| {id: muscle['muscle_id'], name: muscle['muscle']}}
+            muscles.map! {|muscle| {id: muscle['muscle_id'].to_i, name: muscle['muscle']}}
             device['muscles'] = muscles
         end
-        data.map! {|device| {id: device['id'], name: device['name'], description: device['description'], locations: device['locations'], muscles: device['muscles']}}
+        data.map! {|device| {id: device['id'].to_i, name: device['name'], description: device['description'], locations: device['locations'], muscles: device['muscles']}}
         data.to_json
     end
 
@@ -96,13 +109,13 @@ class API < Sinatra::Base
 
             dates.each do |date|
                 locations = dates_locations.select {|entry| entry['date_id'] == date['date_id']}
-                locations.map! {|loc| {id: loc['location_id'], name: loc['location']}}
+                locations.map! {|loc| {id: loc['location_id'].to_i, name: loc['location']}}
                 date['locations'] = locations
             end
 
-            course['dates'] = dates.map {|date| {id: date['date_id'], day: date['week_day'], hour: date['hour'], minutes: date['min'], duration: date['duration'], locations: date['locations']}}
+            course['dates'] = dates.map {|date| {id: date['date_id'].to_i, day: date['week_day'].to_i, hour: date['hour'].to_i, minutes: date['min'].to_i, duration: date['duration'].to_i, locations: date['locations']}}
         end
-        data.map! {|course| {id: course['id'], name: course['name'], description: course['description'], dates: course['dates']}}
+        data.map! {|course| {id: course['id'].to_i, name: course['name'], description: course['description'], dates: course['dates']}}
         data.to_json
 
     end
@@ -115,6 +128,9 @@ class API < Sinatra::Base
 
         data = []
         result.each do |row|
+            row["id"] = row["id"].to_i
+            row["costs"] = row["costs"].to_f
+            row["terms"] = row["terms"].to_i
             data.append(row)
         end
         
@@ -186,9 +202,9 @@ class API < Sinatra::Base
         # TODO: fetch name
         result.each do |row|
             data.append({
-                id: row['id'],
+                id: row['id'].to_i,
                 name: "Karl Marx",
-                role: row['role']
+                role: row['role'].to_i
             })
         end
         data.to_json
@@ -204,7 +220,7 @@ class API < Sinatra::Base
         # TODO: fetch name
         result.each do |row|
             data.append({
-                id: row['id'],
+                id: row['id'].to_i,
                 name: "Karl Marx",
                 day: row['request_date']
             })
@@ -222,7 +238,7 @@ class API < Sinatra::Base
         # TODO: fetch name
         result.each do |row|
             data.append({
-                id: row['id'],
+                id: row['id'].to_i,
                 name: "Karl Marx",
                 day: row['request_date'],
                 note: row['note']
@@ -248,8 +264,8 @@ class API < Sinatra::Base
 
     get '/treatment/note/:id' do |id|
         [ 
-            {date: '09.03.2020', note: 'No progress at all'},
-            {date: '02.03.2020', note: 'He was to late'},
+            {id: 1, date: '09.03.2020', note: 'No progress at all'},
+            {id: 2, date: '02.03.2020', note: 'He was to late'},
         ].to_json
     end
 
