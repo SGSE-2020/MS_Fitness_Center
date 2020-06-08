@@ -12,6 +12,7 @@ gem 'multi_json'
 gem 'pg'
 gem 'rack'
 gem 'rack-protection'
+gem 'rack-cors'
 group :test do
     gem 'json-schema'
     gem "rspec"
