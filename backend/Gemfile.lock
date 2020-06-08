@@ -19,6 +19,8 @@ GEM
     pg (1.2.3)
     public_suffix (4.0.5)
     rack (2.2.2)
+    rack-cors (1.1.1)
+      rack (>= 2.0.0)
     rack-protection (2.0.8.1)
       rack
     rack-test (1.1.0)
@@ -54,6 +56,7 @@ DEPENDENCIES
   multi_json
   pg
   rack
+  rack-cors
   rack-protection
   rack-test
   rspec

@@ -29,7 +29,6 @@ class API < Sinatra::Base
 
     before do
         content_type 'application/json'
-        response['Access-Control-Allow-Origin'] = '*'
     end
 
     # all getters
@@ -141,15 +140,41 @@ class API < Sinatra::Base
         result = fetch_from_database("SELECT member.id, member.role, member.height, member.weight, member.performance_level, member.other_activitys, member.diseases,
         member.goal, member.time_aviability, member.abo_start, member.abo_id, abo.name AS abo_name, abo.costs AS abo_costs, abo.terms AS abo_terms
         FROM member LEFT OUTER JOIN abo ON member.abo_id = abo.id WHERE member.id = '#{id}'")
-        if result == '' then
-            return {}.to_json()
+        if result == '' || result.ntuples() == 0 then
+            return {
+                id: -1,
+                personal_data: {
+                    name: '-', 
+                    birthday: '-', 
+                    tel: 0, 
+                    mail: '-',
+                },
+                physical_data: {
+                    height: 0,
+                    weight: 0,
+                    performance_level: 0,
+                    other_activitys: 0,
+                    diseases: '-',
+                    goal: '-',
+                    aviable_time: '-',
+                },
+                abo_information: {
+                    abo: {
+                        id: -1,
+                        name: '-',
+                        costs: 0, 
+                        term: 0
+                    },
+                    abo_start: '-',
+                }
+            }.to_json
         end
 
         #logger = Logger.new('/proc/1/fd/1')
         #logger.formatter = proc do |severity, datetime, progname, msg|
         #    "api: #{msg}\n"
         #end
-    
+        #logger.warn result.ntuples() 
         data = result[0]
         {
             id: data['id'],

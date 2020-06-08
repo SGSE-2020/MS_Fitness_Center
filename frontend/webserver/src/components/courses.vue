@@ -6,7 +6,7 @@
       :coursedescription="cou.description"
       :coursedays="cou.dates"
       :coursedivider="(cou!=allcourses[allcourses.length-1])"/>
-    <span v-if="allcourses.length === 0">Keine Kurse bekannte</span>
+    <span v-if="allcourses.length === 0">Keine Kurse bekannt</span>
   </div>
 </template>
 

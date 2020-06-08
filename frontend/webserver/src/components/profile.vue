@@ -48,7 +48,7 @@
       </tr>
     </table>
 
-    <h2>Abo Infotmationen</h2>
+    <h2>Abo Informationen</h2>
     <table>
       <tr>
         <td>Abo:</td><td>{{ userdata.abo_information.abo.name }}</td>
