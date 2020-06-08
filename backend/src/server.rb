@@ -170,11 +170,11 @@ class API < Sinatra::Base
             }.to_json
         end
 
-        logger = Logger.new('/proc/1/fd/1')
-        logger.formatter = proc do |severity, datetime, progname, msg|
-            "api: #{msg}\n"
-        end
-        logger.warn result.ntuples() 
+        #logger = Logger.new('/proc/1/fd/1')
+        #logger.formatter = proc do |severity, datetime, progname, msg|
+        #    "api: #{msg}\n"
+        #end
+        #logger.warn result.ntuples() 
         data = result[0]
         {
             id: data['id'],
