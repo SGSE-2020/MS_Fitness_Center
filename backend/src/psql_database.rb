@@ -2,11 +2,11 @@ require 'pg'
 require 'logger'
 
 $database_config = {
-    host: String('database'),
-    database: String('fitnesscenter'),
-    user: String('postgres'),
-    port: String('5432'),
-    password: String('1234')
+    host:       ENV['DB_HOST']           || String('database'),
+    database:   ENV['POSTGRES_DB']       || String('fitnesscenter'),
+    user:       ENV['POSTGRES_USER']     || String('postgres'),
+    port:       String('5432'),
+    password:   ENV['POSTGRES_PASSWORD'] || String('1234')
 }
 
 def fetch_from_database(request) 

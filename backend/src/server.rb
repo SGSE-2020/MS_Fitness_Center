@@ -14,6 +14,7 @@ require 'set'
 
 
 #logger.warn('Insert sample data')
+
 init_db
 insert_sample_data
 
