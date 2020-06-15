@@ -83,7 +83,7 @@ jobs:
         ./kustomize edit add secret ms-fitnesscenter --from-literal POSTGRES_USER=$POSTGRES_USER
         ./kustomize edit add secret ms-fitnesscenter --from-literal POSTGRES_PASSWORD=$POSTGRES_PASSWORD
         ./kustomize edit add secret ms-fitnesscenter --from-literal POSTGRES_DB=$POSTGRES_DB
-        ./kustomize edit add secret ms-opnv --from-literal DB_HOST=$DB_HOST
+        ./kustomize edit add secret ms-fitnesscenter --from-literal DB_HOST=$DB_HOST
         ./kustomize build . | kubectl apply -f -
         kubectl rollout status deployment/$DEPLOYMENT_NAME
         kubectl get services -o wide

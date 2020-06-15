@@ -38,7 +38,7 @@ spec:
           - name: DB_HOST
             valueFrom:
               secretKeyRef:
-                name: ms-opnv
+                name: ms-fitnesscenter
                 key: DB_HOST
         ports:
         - containerPort: 8080
