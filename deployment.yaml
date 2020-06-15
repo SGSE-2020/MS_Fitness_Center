@@ -43,8 +43,8 @@ spec:
         ports:
         - containerPort: 8080
         - containerPort: 50051
-      - image: postgres
-        name: ms-fitnesscenter-db
+      - image: ms-parkplatz-database
+        name: ms-fitnesscenter-database
         env:
           - name: POSTGRES_DB
             valueFrom:

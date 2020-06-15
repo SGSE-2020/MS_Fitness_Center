@@ -25,6 +25,7 @@ env:
   GKE_CLUSTER: smartcity
   IMAGE_frontend: ms-fitnesscenter-frontend
   IMAGE_backend: ms-fitnesscenter-backend
+  IMAGE_database: ms-fitnesscenter-database
   REGISTRY_HOSTNAME: gcr.io
   DEPLOYMENT_NAME: ms-fitnesscenter
   POSTGRES_USER: ${{secrets.POSTGRES_USER}}
@@ -63,11 +64,15 @@ jobs:
         docker build -t "$REGISTRY_HOSTNAME"/"$GKE_PROJECT"/"$IMAGE_backend":"$GITHUB_SHA" \
           --build-arg GITHUB_SHA="$GITHUB_SHA" \
           --build-arg GITHUB_REF="$GITHUB_REF" ./backend
+        docker build -t "$REGISTRY_HOSTNAME"/"$GKE_PROJECT"/"$IMAGE_database":"$GITHUB_SHA" \
+          --build-arg GITHUB_SHA="$GITHUB_SHA" \
+          --build-arg GITHUB_REF="$GITHUB_REF" ./database
     # Push the Docker image to Google Container Registry
     - name: Publish
       run: |
         docker push $REGISTRY_HOSTNAME/$GKE_PROJECT/$IMAGE_frontend:$GITHUB_SHA
         docker push $REGISTRY_HOSTNAME/$GKE_PROJECT/$IMAGE_backend:$GITHUB_SHA
+        docker push $REGISTRY_HOSTNAME/$GKE_PROJECT/$IMAGE_database:$GITHUB_SHA
         
     # Set up kustomize
     - name: Set up Kustomize
@@ -80,6 +85,7 @@ jobs:
         gcloud container clusters get-credentials $GKE_CLUSTER --zone $GKE_ZONE --project $GKE_PROJECT
         ./kustomize edit set image ms-fitnesscenter-backend=$REGISTRY_HOSTNAME/$GKE_PROJECT/$IMAGE_backend:${GITHUB_SHA}
         ./kustomize edit set image ms-fitnesscenter-frontend=$REGISTRY_HOSTNAME/$GKE_PROJECT/$IMAGE_frontend:${GITHUB_SHA}
+        ./kustomize edit set image ms-fitnesscenter-database=$REGISTRY_HOSTNAME/$GKE_PROJECT/$IMAGE_database:${GITHUB_SHA}
         ./kustomize edit add secret ms-fitnesscenter --from-literal POSTGRES_USER=$POSTGRES_USER
         ./kustomize edit add secret ms-fitnesscenter --from-literal POSTGRES_PASSWORD=$POSTGRES_PASSWORD
         ./kustomize edit add secret ms-fitnesscenter --from-literal POSTGRES_DB=$POSTGRES_DB
