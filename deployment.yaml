@@ -45,6 +45,8 @@ spec:
         - containerPort: 50051
       - image: ms-fitnesscenter-database
         name: ms-fitnesscenter-database
+        ports:
+          - containerPort: 5432
         env:
           - name: POSTGRES_DB
             valueFrom:
