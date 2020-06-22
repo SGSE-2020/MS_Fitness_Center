@@ -1,6 +1,7 @@
 require 'rubygems'
 require 'bundler/setup'
 require_relative 'grpc_server'
+require_relative 'grpc_client'
 require_relative 'psql_database'
 require 'sinatra'
 require 'logger'
@@ -362,5 +363,39 @@ class API < Sinatra::Base
         { message: 'Insertions was successfull' }.to_json
 
     end
+
+    post '/members/add' do
+        begin
+            data = JSON.parse(request.body.read)
+        rescue
+            halt 400, { message:'Invalid JSON' }.to_json
+        end
+
+        logger = Logger.new('/proc/1/fd/1')
+        logger.formatter = proc do |severity, datetime, progname, msg|
+            "api: #{msg}\n"
+        end
+
+        if data['abo_id'] == nil then
+            data['abo_id'] = "NULL"
+        end
+        if data['abo_start'] == nil then
+            data['abo_start'] = "NULL"
+        else
+            data['abo_start'] = "'#{data['abo_start']}'"
+        end
+
+
+        user_data = get_user_information data['uid']
+        logger.warn user_data
+        
+        post_to_database("INSERT INTO member (id, role, abo_id, abo_start) VALUES(
+            '#{data['uid']}', 
+            #{data['role']}, 
+            #{data['abo_id']}, 
+            #{data['abo_start']}
+        )")
+    end
+
 end
 

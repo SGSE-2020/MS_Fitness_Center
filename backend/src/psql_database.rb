@@ -14,6 +14,7 @@ def fetch_from_database(request)
     logger.formatter = proc do |severity, datetime, progname, msg|
         "psql: #{msg}\n"
     end
+
     result = ''
     begin
         # Initialize connection variables.

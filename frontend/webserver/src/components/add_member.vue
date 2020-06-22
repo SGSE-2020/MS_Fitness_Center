@@ -26,6 +26,10 @@
           </select>
         </td>
       </tr>
+      <tr>
+        <td>Startdatum</td>
+        <td><input type="date" v-model="date"></td>
+      </tr>
     </table>
     <button id="conf" v-on:click="confirm">Bestätigen</button>
   </div>
@@ -39,10 +43,11 @@ export default {
   name: 'AddMember',
   data() {
     return {
-      uuid: None,
-      role: "",
-      abo: "",
-      all_abos: []
+      uuid: null,
+      role: null,
+      abo: null,
+      all_abos: [],
+      date: null
     }
   },
   created() {
@@ -56,9 +61,18 @@ export default {
   methods: {
     confirm: function (event) {
       // add validation
-      alert('Änderungen erfolgreich engefügt')
-      // `event` is the native DOM event
-      if (event) {
+      if (this.date != null && this.uuid != null && this.role != null) {
+        fetch(api_config.url.concat("/members/add"), {
+          method: "POST",
+          body: JSON.stringify({uid: this.uuid, role: this.role, abo_id: this.abo, abo_start: this.date})
+        }).then(res => {
+          alert('Antrag erfolgreich abgeschickt')
+            // `event` is the native DOM event
+        })
+      } else {
+          alert('Datum, UUID, Rolle eingeben!')
+      }
+      if (event && this.date != null) {
         router.push('/members')
       }
     }
