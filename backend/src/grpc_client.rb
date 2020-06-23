@@ -15,7 +15,7 @@ include User
 include Routeguide
 
 $microservice_config = {
-    host_buergerbuero:       String('ms-buergerbuero')
+    host_buergerbuero:       String('ms-buergerbuero:50051')
 }
 
 def get_user_information(user_id)
