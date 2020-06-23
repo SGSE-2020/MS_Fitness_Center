@@ -28,6 +28,7 @@ export default {
   methods: {
     confirm: function (event) {
       // add validation
+      console.log(event)
       if (this.date != null) {
         fetch(api_config.url.concat("/requests/treatment"), {
           method: "POST",

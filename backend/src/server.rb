@@ -371,7 +371,7 @@ class API < Sinatra::Base
             halt 400, { message:'Invalid JSON' }.to_json
         end
 
-        logger = Logger.new('/proc/1/fd/1')
+        logger = Logger.new('./log')
         logger.formatter = proc do |severity, datetime, progname, msg|
             "api: #{msg}\n"
         end
@@ -385,16 +385,25 @@ class API < Sinatra::Base
             data['abo_start'] = "'#{data['abo_start']}'"
         end
 
+        #test_local
 
         user_data = get_user_information data['uid']
         logger.warn user_data
-        
+        if user_data == nil || user_data.uid == nil then
+            logger.warn "Invalid user"
+            status 400
+            return { message:'Got nil as answer' }.to_json
+        end
+
         post_to_database("INSERT INTO member (id, role, abo_id, abo_start) VALUES(
             '#{data['uid']}', 
             #{data['role']}, 
             #{data['abo_id']}, 
             #{data['abo_start']}
         )")
+
+
+        return { message:user_data.uid }.to_json
     end
 
 end

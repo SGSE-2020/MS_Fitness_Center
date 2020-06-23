@@ -61,18 +61,22 @@ export default {
   methods: {
     confirm: function (event) {
       // add validation
-      if (this.date != null && this.uuid != null && this.role != null) {
+      console.log(event)
+      if (this.uuid != null && this.role != null) {
+        console.log(JSON.stringify({uid: this.uuid, role: this.role, abo_id: this.abo, abo_start: this.date}))
         fetch(api_config.url.concat("/members/add"), {
           method: "POST",
           body: JSON.stringify({uid: this.uuid, role: this.role, abo_id: this.abo, abo_start: this.date})
-        }).then(res => {
-          alert('Antrag erfolgreich abgeschickt')
+        }).then(res => res.json()).then(data => {
+          alert('Antrag erfolgreich abgeschickt ' + data.message)
             // `event` is the native DOM event
+        }).catch((error) => {
+          alert('Ein Problem ist aufgetreten')
         })
       } else {
           alert('Datum, UUID, Rolle eingeben!')
       }
-      if (event && this.date != null) {
+      if (event && this.uuid != null && this.role != null) {
         router.push('/members')
       }
     }
