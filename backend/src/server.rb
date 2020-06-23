@@ -392,7 +392,7 @@ class API < Sinatra::Base
         if user_data == nil || user_data.uid == nil then
             logger.warn "Invalid user"
             status 400
-            return { message:'Got nil as answer' }.to_json
+            return { message:'Got nil as answer', uid: user_data.uid }.to_json
         end
 
         post_to_database("INSERT INTO member (id, role, abo_id, abo_start) VALUES(
@@ -403,7 +403,7 @@ class API < Sinatra::Base
         )")
 
 
-        return { message:user_data.uid }.to_json
+        return { message:user_data.uid, uid: user_data.uid}.to_json
     end
 
 end
