@@ -389,10 +389,16 @@ class API < Sinatra::Base
 
         user_data = get_user_information data['uid']
         logger.warn user_data
-        if user_data == nil || user_data.uid == nil then
+        if user_data == nil then
             logger.warn "Invalid user"
             status 400
-            return { message:'Got nil as answer', uid: user_data.uid }.to_json
+            return { message:'Could not reach buergerbuero. Got nil as answer.' }.to_json
+        end
+
+        if user_data.uid == nil then
+            logger.warn "Invalid user"
+            status 400
+            return { message:'The userid is nil. The user does not exist.' }.to_json
         end
 
         post_to_database("INSERT INTO member (id, role, abo_id, abo_start) VALUES(

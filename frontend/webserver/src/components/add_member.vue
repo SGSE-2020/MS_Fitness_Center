@@ -68,9 +68,10 @@ export default {
           method: "POST",
           body: JSON.stringify({uid: this.uuid, role: this.role, abo_id: this.abo, abo_start: this.date})
         }).then(res => res.json()).then(data => {
-          alert('Antrag erfolgreich abgeschickt ' + data.message + ' uid: ' + data.uid)
+          alert('Antrag erfolgreich abgeschickt: ' + data.message)
             // `event` is the native DOM event
         }).catch((error) => {
+          console.error(error)
           alert('Ein Problem ist aufgetreten')
         })
       } else {
