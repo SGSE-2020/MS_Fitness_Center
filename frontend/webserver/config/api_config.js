@@ -1,5 +1,5 @@
 const api_config = {
-    url: "http://localhost:8080",
+    url: "/api",
     port: ""
 };
 
