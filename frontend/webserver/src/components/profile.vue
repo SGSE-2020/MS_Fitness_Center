@@ -4,6 +4,7 @@
     <div id="hold_buttons">
       <button v-on:click="requestTP">Neuer Trainingsplan</button>
       <button v-on:click="requestT">Behandlung</button>
+      <button v-on:click="logout">Abmelden</button>
     </div>
     <h1>Profil</h1>
     <h2>Persönliche Daten</h2>
@@ -74,6 +75,8 @@
 <script>
 import api_config from '../../config/api_config'
 import router from '../router'
+import firebase from 'firebase'
+import firebase_config from '../../config/firebase_config'
 
 export default {
   name: 'Profile',
@@ -93,6 +96,11 @@ export default {
     },
     requestT: function (event) {
       router.push('/treatment/request')
+    },
+    logout: function (event) {
+      firebase.auth().signOut().then(function() {
+        router.push('/home')
+      })
     }
   }
 }

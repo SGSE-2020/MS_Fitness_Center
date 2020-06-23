@@ -2,10 +2,11 @@
   <div id="header">
     <div id="container">
       <img id="img" alt="Banner" src="../assets/banner.png">
+      <span id="dName" v-if="displayName != ''"> Angemeldet als {{ displayName }} </span>
       <router-link id="multiusericon" to='/members'>
         <img src="../assets/maenner.svg">
       </router-link>
-      <router-link id="usericon" to='/profile'>
+      <router-link id="usericon" :to='profile_route'>
         <img src="../assets/benutzer.svg">
       </router-link>
     </div>
@@ -16,33 +17,49 @@
 </template>
 
 <script>
+import firebase from 'firebase'
+import firebase_config from '../../config/firebase_config'
+
 export default {
   name: 'PageHead',
   data() {
     return {
-    links: [
-      {
-        id: 0,
-        text: 'Home',
-        page: '/home'
-      },
-      {
-        id: 1,
-        text: 'Geräte',
-        page: '/devices'
-      },
-      {
-        id: 2,
-        text: 'Kurse',
-        page: '/courses'
-      },
-      {
-        id: 3,
-        text: 'Abos',
-        page: '/abo'
-       }
+      profile_route: '/login',
+      displayName: '',
+      links: [
+        {
+          id: 0,
+          text: 'Home',
+          page: '/home'
+        },
+        {
+          id: 1,
+          text: 'Geräte',
+          page: '/devices'
+        },
+        {
+          id: 2,
+          text: 'Kurse',
+          page: '/courses'
+        },
+        {
+          id: 3,
+          text: 'Abos',
+          page: '/abo'
+        }
       ],
     }
+  },
+  created() {
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user == null) {
+        this.profile_route = '/login'
+        this.displayName = ''
+      } else {
+        this.profile_route = '/profile'
+        this.displayName = user.displayName
+      }
+    })
   }
 }
 </script>
@@ -91,5 +108,10 @@ export default {
     width: 40px;
     height: 40px;
     position: absolute; bottom:15px; right:15px;
+  }
+  #dName {
+    float: right;
+    position: absolute; bottom:15px; right:140px;
+    color: white
   }
 </style>

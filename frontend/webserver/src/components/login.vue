@@ -14,6 +14,7 @@
 <script>
 import firebase from 'firebase'
 import firebase_config from '../../config/firebase_config'
+import router from '../router'
 
 export default {
   name: "Login",
@@ -24,19 +25,15 @@ export default {
       email: null
     }
   },
-  created() {
-    firebase.auth().onAuthStateChanged((user) => {
-      
-    })
-  },
   methods: {
     login: function (event) {
       if (this.name.length > 0 && this.pw.length > 0) {
         firebase.auth().signInWithEmailAndPassword(this.name, this.pw).then(function(user) {
             firebase.auth().currentUser.getIdToken(true).then(function(idToken) {
                 //Token zu Bürgerbüro senden -> Uid zurückbekommen -> Dann User validiert
-                alert("Token ist:" + idToken);
+                //alert("Token ist:" + idToken);
                 console.log(firebase.auth().currentUser);
+                router.push('/home')
                 //$('#user_loggedin').html(firebase.auth().currentUser.email);
             }).catch(function(error) {
                 console.log(error);
