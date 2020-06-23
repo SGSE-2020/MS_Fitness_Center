@@ -25,7 +25,7 @@ def get_user_information(user_id)
 
     response = nil
     begin
-        response = stub.get_user(user_id_messages).message
+        response = stub.get_user(user_id_messages)
     rescue GRPC::BadStatus => e
         logger = Logger.new('./log')
         logger.formatter = proc do |severity, datetime, progname, msg|
@@ -43,7 +43,18 @@ def verify_user_token(user_token)
     stub = User::UserService::Stub.new(microservice_config[:host_buergerbuero], :this_channel_is_insecure)
     user_token_messages = UserId.new(token: user_token)
 
-    response = stub.verify_user(user_token_messages)
+    response = nil
+    begin
+        response = stub.verify_user(user_token_messages)
+    rescue GRPC::BadStatus => e
+        logger = Logger.new('./log')
+        logger.formatter = proc do |severity, datetime, progname, msg|
+            "api: #{msg}\n"
+        end
+
+        logger.warn e.message
+        puts e.message
+    end
     response
 end
 
@@ -60,5 +71,5 @@ def test_local
     logger.formatter = proc do |severity, datetime, progname, msg|
         "api: #{msg}\n"
     end
-    logger.warn response
+    logger.warn response.description
 end
