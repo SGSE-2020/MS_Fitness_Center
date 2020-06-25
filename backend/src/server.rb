@@ -385,7 +385,7 @@ class API < Sinatra::Base
             data['abo_start'] = "'#{data['abo_start']}'"
         end
 
-        test_local
+        #test_local
 
         user_data = get_user_information data['uid']
         logger.warn user_data
