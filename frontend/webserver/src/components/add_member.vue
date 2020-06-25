@@ -11,9 +11,9 @@
         <td>
           <select v-model="role">
             <option value="" selected disabled>Please select one</option>
-            <option value="1">Kunde</option>
-            <option value="2">Trainer</option>
-            <option value="3">Physiotherapeut</option>
+            <option value="0">Kunde</option>
+            <option value="1">Trainer</option>
+            <option value="2">Physiotherapeut</option>
           </select>
         </td>
       </tr>
@@ -69,6 +69,7 @@ export default {
           body: JSON.stringify({uid: this.uuid, role: this.role, abo_id: this.abo, abo_start: this.date})
         }).then(res => res.json()).then(data => {
           alert('Antrag erfolgreich abgeschickt: ' + data.message)
+          router.push('/members')
             // `event` is the native DOM event
         }).catch((error) => {
           console.error(error)
@@ -76,9 +77,6 @@ export default {
         })
       } else {
           alert('Datum, UUID, Rolle eingeben!')
-      }
-      if (event && this.uuid != null && this.role != null) {
-        router.push('/members')
       }
     }
   }
