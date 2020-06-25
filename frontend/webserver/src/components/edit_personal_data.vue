@@ -40,10 +40,39 @@ import firebase_config from '../../config/firebase_config'
 export default {
   name: 'EditPersonalData',
   data() {
-    return {userdata: []}
+    return {
+      userdata: {
+        personal_data: {
+          name: '-',
+          birthday: '-',
+          tel: 0,
+          mail: '-'
+        },
+        physical_data: {
+          height: 0,
+          weight: 0,
+          performance_level: 0,
+          other_activitys: '-',
+          diseases: '-',
+          goal: '-',
+          aviable_time: 0,
+        },
+        abo_information: {
+          abo: { 
+            name: '-',
+            costs: 0,
+            term: 0
+          },
+          abo_start: '-'
+        }
+      },
+      id: -1,
+      ownUser: false
+    }
   },
   created() {
-    fetch(api_config.url.concat("/personal_data/" + firebase.auth().currentUser.uid))
+    var id = firebase.auth().currentUser.uid
+    fetch(api_config.url.concat("/personal_data/" + id))
       .then(response => response.json())
       .then(json => {
         this.userdata = json
@@ -51,7 +80,7 @@ export default {
   },
   methods: {
     confirm: function (event) {
-      firebase.auth().currentUser.getIdToken(true).then(function(idToken) {
+      firebase.auth().currentUser.getIdToken(true).then(idToken => {
         fetch(api_config.url.concat("/personal_data"), {
             method: "POST",
             body: JSON.stringify({
@@ -63,7 +92,7 @@ export default {
               goal: this.userdata.physical_data.goal,
               time_aviability: this.userdata.physical_data.aviable_time,
               token: idToken, // TODO: token for authentification
-              id: "firebase.auth().currentUser.uid" //TODO get id
+              id: firebase.auth().currentUser.uid //TODO get id
             })}).then(res => {
             alert('Antrag erfolgreich abgeschickt')
             router.push('/profile')

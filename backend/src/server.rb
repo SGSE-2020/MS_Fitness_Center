@@ -348,6 +348,11 @@ class API < Sinatra::Base
             halt 400, { message:'Invalid JSON' }.to_json
         end
         # TODO: validate by token
+
+        data['height'] = data['height'] == "" ? "NULL" : data['height']
+        data['weight'] = data['weight'] == "" ? "NULL" : data['weight']
+        data['performance_level'] = data['performance_level'] == "" ? "NULL" : data['performance_level']
+        data['time_aviability'] = data['time_aviability'] == "" ? "NULL" : data['time_aviability']
         
         post_to_database("UPDATE member
         SET 
