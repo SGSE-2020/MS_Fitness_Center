@@ -2,9 +2,9 @@
 <div id="overall">
   <div class="contentdiv">
     <div id="hold_buttons">
-      <button v-on:click="requestTP">Neuer Trainingsplan</button>
-      <button v-on:click="requestT">Behandlung</button>
-      <button v-on:click="logout">Abmelden</button>
+      <button v-if="ownUser" v-on:click="requestTP">Neuer Trainingsplan</button>
+      <button v-if="ownUser" v-on:click="requestT">Behandlung</button>
+      <button v-if="ownUser" v-on:click="logout">Abmelden</button>
     </div>
     <h1>Profil</h1>
     <h2>Persönliche Daten</h2>
@@ -64,9 +64,10 @@
         <td>Laufzeit:</td><td>{{ userdata.abo_information.abo.term }}</td>
       </tr>
     </table>
-    <router-link id="edit" to='/profile/edit'>
+    <router-link v-if="ownUser" id="edit" to='/profile/edit'>
       <img src="../assets/bearbeiten.svg">
     </router-link>
+      <img v-if="!ownUser" src="../assets/muell.svg" id="delete" v-on:click='deleteMember'>
     <br>
   </div>
 </div>
@@ -81,16 +82,56 @@ import firebase_config from '../../config/firebase_config'
 export default {
   name: 'Profile',
   data() {
-    return {userdata: []}
+    return {
+      userdata: {
+        personal_data: {
+          name: '-',
+          birthday: '-',
+          tel: 0,
+          mail: '-'
+        },
+        physical_data: {
+          height: 0,
+          weight: 0,
+          performance_level: 0,
+          other_activitys: '-',
+          diseases: '-',
+          goal: '-',
+          aviable_time: 0,
+        },
+        abo_information: {
+          abo: { 
+            name: '-',
+            costs: 0,
+            term: 0
+          },
+          abo_start: '-'
+        }
+      },
+      id: -1,
+      ownUser: false
+    }
   },
   created() {
-    fetch(api_config.url.concat("/personal_data/1"))
-      .then(response => response.json())
-      .then(json => {
-        this.userdata = json
-      })
+    this.getData()
   },
   methods: {
+    getData() {
+      if (this.$route.params.id == undefined) {
+        if (firebase.auth().currentUser != null) {
+          this.id = firebase.auth().currentUser.uid
+          this.ownUser = true
+        }
+      } else {
+        this.id = this.$route.params.id
+        this.ownUser = false
+      }
+      fetch(api_config.url.concat('/personal_data/' + String(this.id)))
+        .then(response => response.json())
+        .then(json => {
+          this.userdata = json
+        })
+    },
     requestTP: function (event) {
       router.push('/trainingplan/request')
     },
@@ -101,8 +142,67 @@ export default {
       firebase.auth().signOut().then(function() {
         router.push('/home')
       })
+    },
+    deleteMember: function() {
+      if(confirm('Wollen Sie den Nutzer wirklich löschen?')) {
+        fetch(api_config.url.concat("/member/" + String(this.id)), {
+          method: "DELETE",
+        }).then(res => {
+          alert('User gelöscht')
+          router.push('/members')
+            // `event` is the native DOM event
+        }) 
+      }
     }
-  }
+  },  
+  beforeRouteUpdate(to, from, next) {
+    this.userdata = {
+      personal_data: {
+        name: '-',
+        birthday: '-',
+        tel: 0,
+        mail: '-'
+      },
+      physical_data: {
+        height: 0,
+        weight: 0,
+        performance_level: 0,
+        other_activitys: '-',
+        diseases: '-',
+        goal: '-',
+        aviable_time: 0,
+      },
+      abo_information: {
+        abo: { 
+          name: '-',
+          costs: 0,
+          term: 0
+        },
+        abo_start: '-'
+      }
+    }
+    this.id = -1,
+    this.ownUser = false
+    if (this.$route.params.id == undefined) {
+      if (firebase.auth().currentUser != null) {
+        this.id = firebase.auth().currentUser.uid
+        this.ownUser = true
+      }
+    } else {
+      this.id = to.params.id
+      this.ownUser = false
+    }
+    console.log("fetch the data", this.id)
+    fetch(api_config.url.concat('/personal_data/' + String(this.id)))
+      .then(response => response.json())
+      .then(json => {
+        this.userdata = json
+        next()
+      })
+  },
+  beforeRouteEnter (to, from, next) {
+    next(vm => vm.getData())
+  },
 }
 
 </script>
@@ -138,5 +238,10 @@ tr {
 }
 #hold_buttons button {
   width: 170px;
+}
+#delete {
+  width: 50px;
+  height: 50px;
+  position: absolute; top:10px; right:15px;
 }
 </style>

@@ -52,6 +52,24 @@ def post_to_database(request)
     result
 end
 
+def delete_entry(request)
+    logger = Logger.new('./log')
+    logger.formatter = proc do |severity, datetime, progname, msg|
+        "psql: #{msg}\n"
+    end
+
+    begin
+        # Initialize connection variables.
+        connection = PG::Connection.new(:host => $database_config[:host], :user => $database_config[:user], :dbname => $database_config[:database], :port => $database_config[:port], :password => $database_config[:password])
+
+        connection.exec(request)
+    rescue PG::Error => e
+        logger.warn e.message 
+    ensure
+        connection.close if connection
+    end
+end
+
 def drop_all_tables
     logger = Logger.new('./log')
     logger.formatter = proc do |severity, datetime, progname, msg|

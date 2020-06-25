@@ -227,7 +227,7 @@ class API < Sinatra::Base
         # TODO: fetch name
         result.each do |row|
             data.append({
-                id: row['id'].to_i,
+                id: row['id'],
                 name: "Karl Marx",
                 role: row['role'].to_i
             })
@@ -402,7 +402,7 @@ class API < Sinatra::Base
         end
 
         post_to_database("INSERT INTO member (id, role, abo_id, abo_start) VALUES(
-            '#{data['uid']}', 
+            '#{user_data.uid}', 
             #{data['role']}, 
             #{data['abo_id']}, 
             #{data['abo_start']}
@@ -412,5 +412,18 @@ class API < Sinatra::Base
         return { message:user_data.uid, uid: user_data.uid}.to_json
     end
 
+    delete '/member/:id' do |id|
+        delete_entry(
+            "DELETE FROM trainingplanrequest WHERE member_id = '#{id}';
+            DELETE FROM treatmentrequest WHERE member_id = '#{id}';
+            DELETE FROM treatmentnote WHERE member_id = '#{id}';
+
+            DELETE FROM exercise WHERE trainingplan_id in (SELECT id FROM trainingplan WHERE member_id = '#{id}');
+            DELETE FROM trainingplan WHERE member_id = '#{id}';
+
+            DELETE FROM member WHERE id = '#{id}';"
+        )
+        status 200
+    end
 end
 
