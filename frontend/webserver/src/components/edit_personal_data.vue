@@ -34,6 +34,8 @@
 <script>
 import api_config from '../../config/api_config'
 import router from '../router'
+import firebase from 'firebase'
+import firebase_config from '../../config/firebase_config'
 
 export default {
   name: 'EditPersonalData',
@@ -41,7 +43,7 @@ export default {
     return {userdata: []}
   },
   created() {
-    fetch(api_config.url.concat("/personal_data/1"))
+    fetch(api_config.url.concat("/personal_data/" + firebase.auth().currentUser.uid))
       .then(response => response.json())
       .then(json => {
         this.userdata = json
@@ -49,29 +51,27 @@ export default {
   },
   methods: {
     confirm: function (event) {
-      fetch(api_config.url.concat("/personal_data"), {
-          method: "POST",
-          body: JSON.stringify({
-            height: this.userdata.physical_data.height,
-            weight: this.userdata.physical_data.weight,
-            performance_level: this.userdata.physical_data.performance_level,
-            other_activitys: this.userdata.physical_data.other_activitys,
-            diseases: this.userdata.physical_data.diseases,
-            goal: this.userdata.physical_data.goal,
-            time_aviability: this.userdata.physical_data.aviable_time,
-            token: "XYZ", // TODO: token for authentification
-            id: "1" //TODO get id
-          })}).then(res => {
-          alert('Antrag erfolgreich abgeschickt')
-            // `event` is the native DOM event
-        }).catch(function() {
-          alert('There was a problem')
+      firebase.auth().currentUser.getIdToken(true).then(function(idToken) {
+        fetch(api_config.url.concat("/personal_data"), {
+            method: "POST",
+            body: JSON.stringify({
+              height: this.userdata.physical_data.height,
+              weight: this.userdata.physical_data.weight,
+              performance_level: this.userdata.physical_data.performance_level,
+              other_activitys: this.userdata.physical_data.other_activitys,
+              diseases: this.userdata.physical_data.diseases,
+              goal: this.userdata.physical_data.goal,
+              time_aviability: this.userdata.physical_data.aviable_time,
+              token: idToken, // TODO: token for authentification
+              id: "firebase.auth().currentUser.uid" //TODO get id
+            })}).then(res => {
+            alert('Antrag erfolgreich abgeschickt')
+            router.push('/profile')
+              // `event` is the native DOM event
+          }).catch(function() {
+            alert('There was a problem')
+        })
     });
-      // add validation
-      // `event` is the native DOM event
-      if (event) {
-        router.push('/profile')
-      }
     }
   }
 }
