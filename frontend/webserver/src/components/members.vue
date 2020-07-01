@@ -41,6 +41,7 @@ export default {
       .then(response => response.json())
       .then(json => {
         this.members = json
+        //console.log(json)
       })
   },
   methods: {

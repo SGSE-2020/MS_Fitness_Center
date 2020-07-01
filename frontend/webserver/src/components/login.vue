@@ -38,6 +38,11 @@ export default {
                 firebase.auth().currentUser.getIdToken(true).then(function(idToken) {
                     //Token zu Bürgerbüro senden -> Uid zurückbekommen -> Dann User validiert
                     //alert("Token ist:" + idToken);
+                    fetch(api_config.url.concat("/role/" + firebase.auth().currentUser.uid))
+                    .then(response => response.json())
+                    .then(json => {
+                      console.log("userrole:", json)
+                    })
 
                     router.push('/home')
                 }).catch(function(error) {
