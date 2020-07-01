@@ -419,7 +419,7 @@ class API < Sinatra::Base
             return { message:'Could not reach buergerbuero. Got nil as answer.' }.to_json
         end
 
-        if user_data.uid == nil then
+        if user_data.uid == nil || user_data.uid == "" then
             logger.warn "Invalid user"
             status 400
             return { message:'The userid is nil. The user does not exist.' }.to_json
@@ -446,6 +446,17 @@ class API < Sinatra::Base
             DELETE FROM trainingplan WHERE member_id = '#{id}';
 
             DELETE FROM member WHERE id = '#{id}';"
+        )
+        status 200
+    end
+
+    delete '/device/:id' do |id|
+        delete_entry(
+            "DELETE FROM device_muscle WHERE device_id = '#{id}';
+            DELETE FROM location_device WHERE device_id = '#{id}';
+            DELETE FROM exercise WHERE device_id = '#{id}';
+
+            DELETE FROM device WHERE id = '#{id}';"
         )
         status 200
     end
