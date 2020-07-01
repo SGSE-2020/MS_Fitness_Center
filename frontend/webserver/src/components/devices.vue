@@ -1,17 +1,21 @@
 <template>
-  <div class="contentdiv" :key="">
-    <h1>Geräte</h1>
-    <Device v-for="dev in alldevices" :key=dev.id
-      :deviceid="dev.id"
-      :devicename=dev.name 
-      :devicedescription=dev.description 
-      :devicemuscle=dev.muscles 
-      :devicelocs=dev.locations 
-      :devicedivider="(dev!=alldevices[alldevices.length-1])"
-      :deleteBut="!customer"/>
-    <span v-if="alldevices.length === 0">
-      Keine Geräte bekannt
-    </span>
+
+  <div id="overall">
+    <div class="contentdiv">
+      <h1>Geräte</h1>
+      <Device v-for="dev in alldevices" :key=dev.id
+        :deviceid="dev.id"
+        :devicename=dev.name 
+        :devicedescription=dev.description 
+        :devicemuscle=dev.muscles 
+        :devicelocs=dev.locations 
+        :devicedivider="(dev!=alldevices[alldevices.length-1])"
+        :deleteBut="!customer"/>
+      <span v-if="alldevices.length === 0">
+        Keine Geräte bekannt
+      </span>
+      <img v-if="!customer" src="../assets/plus.svg" id="plus" v-on:click="addUser">
+    </div>
   </div>
 </template>
 
@@ -20,6 +24,7 @@ import firebase, { functions } from 'firebase'
 import firebase_config from '../../config/firebase_config'
 import api_config from '../../config/api_config'
 import Device from './device.vue'
+import router from '../router'
 
 export default {
   name: 'Devices',
@@ -60,9 +65,21 @@ export default {
       }
       this.alldevices.splice(idx, 1)
       this.reload = this.alldevices.length
+    },
+    addUser: function() {
+      router.push('/device/add')
     }
   }
 }
 </script>
 <style scoped>
+
+#plus {
+  width: 50px;
+  height: 50px;
+  position: absolute; top:10px; right:15px;
+}
+#overall {
+  position: relative;
+}
 </style>
