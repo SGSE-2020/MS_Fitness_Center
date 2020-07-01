@@ -178,12 +178,12 @@ class API < Sinatra::Base
         data = result[0]
         user_data = get_user_information data['id']
         {
-            id: if user_data != nil && user_data.uid != nil then user_data.uid else data['id'] end,
+            id: if user_data != nil && user_data.uid != nil && user_data.uid != "" then user_data.uid else data['id'] end,
             personal_data: {
-                name: if user_data != nil && user_data.firstName != nil then "#{user_data.firstName} #{user_data.lastName}" else "-" end, 
-                birthday: if user_data != nil && user_data.birthDate != nil then user_data.birthDate else "-" end, 
-                tel: if user_data != nil && user_data.phone != nil then user_data.phone else "-" end,
-                mail: if user_data != nil && user_data.email != nil then user_data.email else "-" end,
+                name: if user_data != nil && user_data.firstName != nil user_data.firstName != "" then "#{user_data.firstName} #{user_data.lastName}" else "-" end, 
+                birthday: if user_data != nil && user_data.birthDate != nil user_data.birthDate != "" then user_data.birthDate else "-" end, 
+                tel: if user_data != nil && user_data.phone != nil && user_data.phone != "" then user_data.phone else "-" end,
+                mail: if user_data != nil && user_data.email != nil && user_data.email != "" then user_data.email else "-" end,
             },
             physical_data: {
                 height: data['height'],
@@ -309,7 +309,7 @@ class API < Sinatra::Base
         data = result[0]
         {
             id: id,
-            role: data["role"]
+            role: data["role"].to_i
         }.to_json
     end
 

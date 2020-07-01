@@ -3,7 +3,7 @@
     <div id="container">
       <img id="img" alt="Banner" src="../assets/banner.png">
       <span id="dName" v-if="displayName != ''"> Angemeldet als {{ displayName }} </span>
-      <router-link id="multiusericon" to='/members'>
+      <router-link v-if="!customer" id="multiusericon" to='/members'>
         <img src="../assets/maenner.svg">
       </router-link>
       <router-link id="usericon" :to='profile_route'>
@@ -19,6 +19,7 @@
 <script>
 import firebase from 'firebase'
 import firebase_config from '../../config/firebase_config'
+import api_config from '../../config/api_config'
 
 export default {
   name: 'PageHead',
@@ -26,6 +27,7 @@ export default {
     return {
       profile_route: '/login',
       displayName: '',
+      customer: true,
       links: [
         {
           id: 0,
@@ -51,13 +53,22 @@ export default {
     }
   },
   created() {
+
     firebase.auth().onAuthStateChanged((user) => {
       if (user == null) {
         this.profile_route = '/login'
         this.displayName = ''
+        this.customer = true
       } else {
         this.profile_route = '/profile'
         this.displayName = user.displayName
+
+        fetch(api_config.url.concat("/role/" + firebase.auth().currentUser.uid))
+        .then(response => response.json())
+        .then(json => {
+          this.customer = 0 == json["role"]
+          console.log("userrole:", this.customer )
+        })
       }
     })
   }
