@@ -176,13 +176,14 @@ class API < Sinatra::Base
         #end
         #logger.warn result.ntuples() 
         data = result[0]
+        user_data = get_user_information data['id']
         {
-            id: data['id'],
+            id: if user_data != nil && user_data.uid != nil then user_data.uid else data['id'] end,
             personal_data: {
-                name: 'Karl Marx', 
-                birthday: '18.04.1998', 
-                tel: 123456789, 
-                mail: 'funy@rly.com',
+                name: if user_data != nil && user_data.firstName != nil then "#{user_data.firstName} #{user_data.lastName}" else "?" end, 
+                birthday: if user_data != nil && user_data.birthDate != nil then user_data.birthDate else "" end, 
+                tel: if user_data != nil && user_data.phone != nil then user_data.phone else "" end,
+                mail: if user_data != nil && user_data.email != nil then user_data.email else "" end,
             },
             physical_data: {
                 height: data['height'],
@@ -226,9 +227,12 @@ class API < Sinatra::Base
 
         # TODO: fetch name
         result.each do |row|
+            user_data = get_user_information row['id']
+            id = if user_data != nil && user_data.uid != nil then user_data.uid else row['id'] end
+            name = if user_data != nil && user_data.firstName != nil then "#{user_data.firstName} #{user_data.lastName}" else "?" end
             data.append({
-                id: row['id'],
-                name: "Karl Marx",
+                id: id,
+                name: name,
                 role: row['role'].to_i
             })
         end
