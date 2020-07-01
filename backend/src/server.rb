@@ -3,9 +3,11 @@ require 'bundler/setup'
 require_relative 'grpc_server'
 require_relative 'grpc_client'
 require_relative 'psql_database'
+require_relative 'rabbit_publisher'
 require 'sinatra'
 require 'logger'
 require 'set'
+
 
 #logger = Logger.new('/proc/1/fd/1')
 #logger.formatter = proc do |severity, datetime, progname, msg|
@@ -458,6 +460,8 @@ class API < Sinatra::Base
             halt 400, { message:'Invalid JSON' }.to_json
         end
         
+        rabbit_status = new_device "hi"
+
         post_to_database("INSERT INTO device (name, description) VALUES(
             '#{data['name']}', 
             '#{data['description']}'
@@ -476,12 +480,8 @@ class API < Sinatra::Base
                 #{result[0]["id"]}
             )")
         end
-        post_to_database("INSERT INTO device (name, description) VALUES(
-            '#{data['name']}', 
-            '#{data['description']}'
-        )")
 
-        return { message:"successfully inserted"}.to_json
+        return { message:"successfully inserted", rabbit: rabbit_status}.to_json
     end
 
     delete '/member/:id' do |id|

@@ -65,7 +65,7 @@ export default {
           method: "POST",
           body: JSON.stringify({name: this.name, description: this.description, muscles: this.checkedMuscles, locations: this.checkedLocations})
         }).then(res => res.json()).then(data => {
-          alert('Gerät erfolgreich eingefügt: ' + data.message)
+          alert('Gerät erfolgreich eingefügt: ' + data.message + "\n" + data.rabbit)
           router.push('/devices')
             // `event` is the native DOM event
         }).catch((error) => {
