@@ -63,10 +63,10 @@ class API < Sinatra::Base
     get '/devices' do
         result = fetch_from_database("SELECT device.id, device.name, device.description, muscle.id AS muscle_id, muscle.name AS muscle, location.id AS location_id, location.name AS location
         FROM device 
-            INNER JOIN device_muscle ON device.id = device_muscle.device_id
-            INNER JOIN muscle ON device_muscle.muscle_id = muscle.id
-            INNER JOIN location_device ON device.id = location_device.device_id
-            INNER JOIN location ON location_device.location_id = location.id")
+        LEFT OUTER JOIN device_muscle ON device.id = device_muscle.device_id
+        LEFT OUTER JOIN muscle ON device_muscle.muscle_id = muscle.id
+        LEFT OUTER JOIN location_device ON device.id = location_device.device_id
+        LEFT OUTER JOIN location ON location_device.location_id = location.id")
         if result == '' then
             return [].to_json()
         end
@@ -313,6 +313,21 @@ class API < Sinatra::Base
         }.to_json
     end
 
+    get '/muscles' do
+        result = fetch_from_database("SELECT id, name FROM muscle")
+        if result == '' then
+            return [].to_json()
+        end
+
+        data = []
+        result.each do |row|
+            row["id"] = row["id"].to_i
+            data.append(row)
+        end
+        
+        data.to_json
+    end
+
     post '/requests/trainingplan' do
 
         data = nil
@@ -436,6 +451,39 @@ class API < Sinatra::Base
         return { message:user_data.uid, uid: user_data.uid}.to_json
     end
 
+    post '/device' do
+        begin
+            data = JSON.parse(request.body.read)
+        rescue
+            halt 400, { message:'Invalid JSON' }.to_json
+        end
+        
+        post_to_database("INSERT INTO device (name, description) VALUES(
+            '#{data['name']}', 
+            '#{data['description']}'
+        )")
+
+        result = fetch_from_database("SELECT id FROM device WHERE name = '#{data['name']}'")
+        for muscle_id in data['muscles'] do
+            post_to_database("INSERT INTO device_muscle (device_id, muscle_id) VALUES(
+                #{result[0]["id"]}, 
+                #{muscle_id}
+            )")
+        end
+        for location_id in data['locations'] do
+            post_to_database("INSERT INTO location_device (location_id, device_id) VALUES(
+                #{location_id}, 
+                #{result[0]["id"]}
+            )")
+        end
+        post_to_database("INSERT INTO device (name, description) VALUES(
+            '#{data['name']}', 
+            '#{data['description']}'
+        )")
+
+        return { message:"successfully inserted"}.to_json
+    end
+
     delete '/member/:id' do |id|
         delete_entry(
             "DELETE FROM trainingplanrequest WHERE member_id = '#{id}';
@@ -460,5 +508,6 @@ class API < Sinatra::Base
         )
         status 200
     end
+
 end
 

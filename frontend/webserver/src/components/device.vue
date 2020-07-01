@@ -5,7 +5,7 @@
     </div>
     <p> {{ devicedescription }} </p>
     <b>Muskeln:</b>
-    <ul>
+    <ul v-if="devicemuscle.length != 0">
       <li v-for="mus in devicemuscle" :key=mus.name> {{ mus.name }} </li>
     </ul>
     <p>Standort(e): <i><span v-for="loc in devicelocs" :key=loc.name>{{ loc.name }}<span v-if="loc.name != devicelocs[devicelocs.length-1].name">, </span> </span></i> </p>
