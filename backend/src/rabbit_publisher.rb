@@ -7,7 +7,7 @@ def new_device(text)
         connection.start
 
         channel = connection.create_channel
-        exchange = channel.fanout("fitnesscenter")
+        exchange = channel.fanout("fitnesscenter", :durable => true)
         #severity = ARGV.shift || 'anonymous.info'
         #message = ARGV.empty? ? 'Hello World!' : ARGV.join(' ')
 
