@@ -460,7 +460,7 @@ class API < Sinatra::Base
             halt 400, { message:'Invalid JSON' }.to_json
         end
         
-        rabbit_status = new_device "hi"
+        rabbit_status = new_device({name: data['name'], description: data['description'] }.to_json)
 
         post_to_database("INSERT INTO device (name, description) VALUES(
             '#{data['name']}', 
