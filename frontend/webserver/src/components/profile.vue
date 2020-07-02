@@ -131,7 +131,7 @@ export default {
         .then(json => {
           this.userdata = json
           var bday = this.userdata.personal_data.birthday
-          this.userdata.personal_data.birthday = bday.substring(8, 11) + " " + bday.substring(4, 8) + " " + bday.substring(12, 17)
+          this.userdata.personal_data.birthday = bday.substring(8, 11) + " " + bday.substring(4, 8) + " " + bday.substring(11, 16)
         })
     },
     requestTP: function (event) {
