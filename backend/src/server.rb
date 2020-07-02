@@ -229,11 +229,10 @@ class API < Sinatra::Base
 
         # TODO: fetch name
         result.each do |row|
-            user_data = get_user_information row['id']
-            id = if user_data != nil && user_data.uid != nil && user_data.uid != "" then user_data.uid else row['id'] end
+            user_data = get_user_information row['member_id']
             name = if user_data != nil && user_data.firstName != nil && user_data.firstName != "" then "#{user_data.firstName} #{user_data.lastName}" else "-" end
             data.append({
-                id: id,
+                id: row['id'],
                 name: name,
                 role: row['role'].to_i
             })
@@ -250,11 +249,10 @@ class API < Sinatra::Base
 
         # TODO: fetch name
         result.each do |row|
-            user_data = get_user_information row['id']
-            id = if user_data != nil && user_data.uid != nil && user_data.uid != "" then user_data.uid else row['id'] end
+            user_data = get_user_information row['member_id']
             name = if user_data != nil && user_data.firstName != nil && user_data.firstName != "" then "#{user_data.firstName} #{user_data.lastName}" else "-" end
             data.append({
-                id: id,
+                id: row['id'],
                 name: name,
                 day: row['request_date']
             })
