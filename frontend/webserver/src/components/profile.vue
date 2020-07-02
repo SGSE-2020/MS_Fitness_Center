@@ -130,7 +130,7 @@ export default {
         .then(response => response.json())
         .then(json => {
           this.userdata = json
-          var bday = userdata.personal_data.birthday
+          var bday = this.userdata.personal_data.birthday
           this.userdata.personal_data.birthday = bday.substring(8, 11) + " " + bday.substring(4, 8) + " " + bday.substring(12, 17)
         })
     },
