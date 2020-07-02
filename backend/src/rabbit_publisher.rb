@@ -8,11 +8,6 @@ def new_device(text)
 
         channel = connection.create_channel
         exchange = channel.fanout("fitnesscenter", :durable => true)
-        #severity = ARGV.shift || 'anonymous.info'
-        #message = ARGV.empty? ? 'Hello World!' : ARGV.join(' ')
-
-        #exchange.publish(message, routing_key: severity)
-        #puts " [x] Sent #{severity}:#{message}"
 
         exchange.publish(text, :app_id => "fitnesscenter", :type => "new.device", :content_type => "application/json")
         connection.close

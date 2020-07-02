@@ -341,7 +341,7 @@ class API < Sinatra::Base
 
         post_to_database("INSERT INTO trainingplanrequest (request_date, member_id) VALUES(
             '#{data["date"]}',
-            #{data["id"]}
+            '#{data["id"]}'
         );")
 
         status 200
@@ -369,7 +369,7 @@ class API < Sinatra::Base
         post_to_database("INSERT INTO treatmentrequest (request_date, note, member_id) VALUES(
             '#{data["date"]}',
             '#{data["note"]}',
-            #{data["id"]}
+            '#{data["id"]}'
         );")
 
         status 200
@@ -505,6 +505,20 @@ class API < Sinatra::Base
             DELETE FROM exercise WHERE device_id = '#{id}';
 
             DELETE FROM device WHERE id = '#{id}';"
+        )
+        status 200
+    end
+
+    delete '/requests/trainingplan/:id' do |id|
+        delete_entry(
+            "DELETE FROM trainingplanrequest WHERE id = '#{id}';"
+        )
+        status 200
+    end
+
+    delete '/requests/treatement/:id' do |id|
+        delete_entry(
+            "DELETE FROM treatmentrequest WHERE id = '#{id}';"
         )
         status 200
     end
