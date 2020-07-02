@@ -16,6 +16,8 @@
 <script>
 import api_config from '../../config/api_config'
 import router from '../router'
+import firebase from 'firebase'
+import firebase_config from '../../config/firebase_config'
 
 export default {
   name: "RequestTreatment",
@@ -27,11 +29,16 @@ export default {
   },
   methods: {
     confirm: function (event) {
+      var id = ""
+      if (firebase.auth().currentUser != null) {
+        id = firebase.auth().currentUser.uid
+      }
       // add validation
+      console.log(event)
       if (this.date != null) {
         fetch(api_config.url.concat("/requests/treatment"), {
           method: "POST",
-          body: JSON.stringify({id: 1, note: this.note, date: this.date})
+          body: JSON.stringify({id: id, note: this.note, date: this.date})
         }).then(res => {
           alert('Antrag erfolgreich abgeschickt')
             // `event` is the native DOM event

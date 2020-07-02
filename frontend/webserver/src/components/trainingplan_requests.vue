@@ -7,7 +7,7 @@
         <th>Name</th><th>Tag</th><th class="rightelem">Erledigt</th>
       </tr>
       <tr class="bodytr" v-for="request in requests" :key="request.id">
-        <td> {{ request.name }} </td><td> {{request.day}} </td><td class="rightelem"><img src="../assets/richtig.svg"></td>
+        <td> {{ request.name }} </td><td> {{request.day}} </td><td class="rightelem"><img src="../assets/richtig.svg" v-on:click="deleteReq(request.id)"></td>
       </tr>
     </table>
   </div>
@@ -29,6 +29,24 @@ export default {
       .then(json => {
         this.requests = json
       })
+  },
+  methods: {
+    deleteReq: function(id) {
+      if(confirm('Wollen Sie den Antrag wirklich löschen')) {
+        fetch(api_config.url.concat("/requests/trainingplan/" + String(id)), {
+          method: "DELETE",
+        }).then(res => {
+          alert('Device gelöscht')
+          var idx = 0
+          for (var i = 0; i < this.requests.length; i++) {
+            if (this.requests[i].id == id) {
+              idx = i
+            }
+          }
+          this.requests.splice(idx, 1)
+        }) 
+      }
+    }
   }
 }
 

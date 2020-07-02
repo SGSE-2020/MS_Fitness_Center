@@ -14,6 +14,7 @@ import AddMember from '@/components/add_member'
 import RequestTrainingplan from '@/components/request_trainingplan'
 import RequestTreatment from '@/components/request_treatment'
 import Login from '@/components/login'
+import AddDevice from '@/components/add_device'
 
 Vue.use(Router)
 
@@ -21,8 +22,9 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'Home',
-      component: Home
+      redirect: {
+        name: "Home"
+      }
     },
     {
       path: '/home',
@@ -88,6 +90,16 @@ export default new Router({
       path: '/login',
       name: 'Login',
       component: Login
-    }
+    },
+    {
+      path: '/userdetails/:id',
+      name: 'Profile',
+      component: Profile
+    },
+    {
+      path: '/device/add',
+      name: 'AddDevice',
+      component: AddDevice
+    },
   ]
 })

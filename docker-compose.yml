@@ -17,7 +17,7 @@ services:
         depends_on: 
             - database
     database:
-        image: postgres
+        build: ./database
         restart: always
         ports:
             - 5432:5432

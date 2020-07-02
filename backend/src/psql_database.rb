@@ -2,11 +2,11 @@ require 'pg'
 require 'logger'
 
 $database_config = {
-    host: String('database'),
-    database: String('fitnesscenter'),
-    user: String('postgres'),
-    port: String('5432'),
-    password: String('1234')
+    host:       ENV['DB_HOST']           || String('database'),
+    database:   ENV['POSTGRES_DB']       || String('fitnesscenter'),
+    user:       ENV['POSTGRES_USER']     || String('postgres'),
+    port:       String('5432'),
+    password:   ENV['POSTGRES_PASSWORD'] || String('1234')
 }
 
 def fetch_from_database(request) 
@@ -14,6 +14,7 @@ def fetch_from_database(request)
     logger.formatter = proc do |severity, datetime, progname, msg|
         "psql: #{msg}\n"
     end
+
     result = ''
     begin
         # Initialize connection variables.
@@ -49,6 +50,24 @@ def post_to_database(request)
         connection.close if connection
     end
     result
+end
+
+def delete_entry(request)
+    logger = Logger.new('./log')
+    logger.formatter = proc do |severity, datetime, progname, msg|
+        "psql: #{msg}\n"
+    end
+
+    begin
+        # Initialize connection variables.
+        connection = PG::Connection.new(:host => $database_config[:host], :user => $database_config[:user], :dbname => $database_config[:database], :port => $database_config[:port], :password => $database_config[:password])
+
+        connection.exec(request)
+    rescue PG::Error => e
+        logger.warn e.message 
+    ensure
+        connection.close if connection
+    end
 end
 
 def drop_all_tables

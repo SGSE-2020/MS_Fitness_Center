@@ -1,27 +1,29 @@
 require 'rubygems'
 require 'bundler/setup'
 require_relative 'grpc_server'
+require_relative 'grpc_client'
 require_relative 'psql_database'
+require_relative 'rabbit_publisher'
 require 'sinatra'
 require 'logger'
 require 'set'
+
 
 #logger = Logger.new('/proc/1/fd/1')
 #logger.formatter = proc do |severity, datetime, progname, msg|
 #    "api: #{msg}\n"
 #end
 
-
-
 #logger.warn('Insert sample data')
-init_db
-insert_sample_data
+
+#init_db
+#insert_sample_data
 
 class API < Sinatra::Base
 
     set :port, 8080
     set :protection, :except => [:frame_options, :json_csrf]
-    
+
     get '/' do
         'Welcome to the Sinatra API test'
         puts 'test'
@@ -63,10 +65,10 @@ class API < Sinatra::Base
     get '/devices' do
         result = fetch_from_database("SELECT device.id, device.name, device.description, muscle.id AS muscle_id, muscle.name AS muscle, location.id AS location_id, location.name AS location
         FROM device 
-            INNER JOIN device_muscle ON device.id = device_muscle.device_id
-            INNER JOIN muscle ON device_muscle.muscle_id = muscle.id
-            INNER JOIN location_device ON device.id = location_device.device_id
-            INNER JOIN location ON location_device.location_id = location.id")
+        LEFT OUTER JOIN device_muscle ON device.id = device_muscle.device_id
+        LEFT OUTER JOIN muscle ON device_muscle.muscle_id = muscle.id
+        LEFT OUTER JOIN location_device ON device.id = location_device.device_id
+        LEFT OUTER JOIN location ON location_device.location_id = location.id")
         if result == '' then
             return [].to_json()
         end
@@ -176,13 +178,14 @@ class API < Sinatra::Base
         #end
         #logger.warn result.ntuples() 
         data = result[0]
+        user_data = get_user_information data['id']
         {
-            id: data['id'],
+            id: if user_data != nil && user_data.uid != nil && user_data.uid != "" then user_data.uid else data['id'] end,
             personal_data: {
-                name: 'Karl Marx', 
-                birthday: '18.04.1998', 
-                tel: 123456789, 
-                mail: 'funy@rly.com',
+                name: if user_data != nil && user_data.firstName != nil && user_data.firstName != "" then "#{user_data.firstName} #{user_data.lastName}" else "-" end, 
+                birthday: if user_data != nil && user_data.birthDate != nil && user_data.birthDate != "" then user_data.birthDate else "-" end, 
+                tel: if user_data != nil && user_data.phone != nil && user_data.phone != "" then user_data.phone else "-" end,
+                mail: if user_data != nil && user_data.email != nil && user_data.email != "" then user_data.email else "-" end,
             },
             physical_data: {
                 height: data['height'],
@@ -226,9 +229,12 @@ class API < Sinatra::Base
 
         # TODO: fetch name
         result.each do |row|
+            user_data = get_user_information row['id']
+            id = if user_data != nil && user_data.uid != nil && user_data.uid != "" then user_data.uid else row['id'] end
+            name = if user_data != nil && user_data.firstName != nil && user_data.firstName != "" then "#{user_data.firstName} #{user_data.lastName}" else "-" end
             data.append({
-                id: row['id'].to_i,
-                name: "Karl Marx",
+                id: id,
+                name: name,
                 role: row['role'].to_i
             })
         end
@@ -244,9 +250,11 @@ class API < Sinatra::Base
 
         # TODO: fetch name
         result.each do |row|
+            user_data = get_user_information row['member_id']
+            name = if user_data != nil && user_data.firstName != nil && user_data.firstName != "" then "#{user_data.firstName} #{user_data.lastName}" else "-" end
             data.append({
-                id: row['id'].to_i,
-                name: "Karl Marx",
+                id: row['id'],
+                name: name,
                 day: row['request_date']
             })
         end
@@ -262,9 +270,11 @@ class API < Sinatra::Base
 
         # TODO: fetch name
         result.each do |row|
+            user_data = get_user_information row['member_id']
+            name = if user_data != nil && user_data.firstName != nil && user_data.firstName != "" then "#{user_data.firstName} #{user_data.lastName}" else "-" end
             data.append({
-                id: row['id'].to_i,
-                name: "Karl Marx",
+                id: row['id'],
+                name: name,
                 day: row['request_date'],
                 note: row['note']
             })
@@ -294,6 +304,36 @@ class API < Sinatra::Base
         ].to_json
     end
 
+    get '/role/:id' do |id|
+        result = fetch_from_database("SELECT role FROM member WHERE member.id = '#{id}'")
+        if result == '' || result.ntuples() == 0 then
+            return {
+                id: id,
+                role: -1
+            }.to_json
+        end
+        data = result[0]
+        {
+            id: id,
+            role: data["role"].to_i
+        }.to_json
+    end
+
+    get '/muscles' do
+        result = fetch_from_database("SELECT id, name FROM muscle")
+        if result == '' then
+            return [].to_json()
+        end
+
+        data = []
+        result.each do |row|
+            row["id"] = row["id"].to_i
+            data.append(row)
+        end
+        
+        data.to_json
+    end
+
     post '/requests/trainingplan' do
 
         data = nil
@@ -305,7 +345,7 @@ class API < Sinatra::Base
 
         post_to_database("INSERT INTO trainingplanrequest (request_date, member_id) VALUES(
             '#{data["date"]}',
-            #{data["id"]}
+            '#{data["id"]}'
         );")
 
         status 200
@@ -333,7 +373,7 @@ class API < Sinatra::Base
         post_to_database("INSERT INTO treatmentrequest (request_date, note, member_id) VALUES(
             '#{data["date"]}',
             '#{data["note"]}',
-            #{data["id"]}
+            '#{data["id"]}'
         );")
 
         status 200
@@ -348,6 +388,11 @@ class API < Sinatra::Base
             halt 400, { message:'Invalid JSON' }.to_json
         end
         # TODO: validate by token
+
+        data['height'] = data['height'] == "" ? "NULL" : data['height']
+        data['weight'] = data['weight'] == "" ? "NULL" : data['weight']
+        data['performance_level'] = data['performance_level'] == "" ? "NULL" : data['performance_level']
+        data['time_aviability'] = data['time_aviability'] == "" ? "NULL" : data['time_aviability']
         
         post_to_database("UPDATE member
         SET 
@@ -363,5 +408,124 @@ class API < Sinatra::Base
         { message: 'Insertions was successfull' }.to_json
 
     end
+
+    post '/members/add' do
+        begin
+            data = JSON.parse(request.body.read)
+        rescue
+            halt 400, { message:'Invalid JSON' }.to_json
+        end
+
+        logger = Logger.new('./log')
+        logger.formatter = proc do |severity, datetime, progname, msg|
+            "api: #{msg}\n"
+        end
+
+        if data['abo_id'] == nil then
+            data['abo_id'] = "NULL"
+        end
+        if data['abo_start'] == nil then
+            data['abo_start'] = "NULL"
+        else
+            data['abo_start'] = "'#{data['abo_start']}'"
+        end
+
+        #test_local
+
+        user_data = get_user_information data['uid']
+        logger.warn user_data
+        if user_data == nil then
+            logger.warn "Invalid user"
+            status 400
+            return { message:'Could not reach buergerbuero. Got nil as answer.' }.to_json
+        end
+
+        if user_data.uid == nil || user_data.uid == "" then
+            logger.warn "Invalid user"
+            status 400
+            return { message:'The userid is nil. The user does not exist.' }.to_json
+        end
+
+        post_to_database("INSERT INTO member (id, role, abo_id, abo_start) VALUES(
+            '#{user_data.uid}', 
+            #{data['role']}, 
+            #{data['abo_id']}, 
+            #{data['abo_start']}
+        )")
+
+
+        return { message:user_data.uid, uid: user_data.uid}.to_json
+    end
+
+    post '/device' do
+        begin
+            data = JSON.parse(request.body.read)
+        rescue
+            halt 400, { message:'Invalid JSON' }.to_json
+        end
+        
+        rabbit_status = new_device({name: data['name'], description: data['description'] }.to_json)
+
+        post_to_database("INSERT INTO device (name, description) VALUES(
+            '#{data['name']}', 
+            '#{data['description']}'
+        )")
+
+        result = fetch_from_database("SELECT id FROM device WHERE name = '#{data['name']}'")
+        for muscle_id in data['muscles'] do
+            post_to_database("INSERT INTO device_muscle (device_id, muscle_id) VALUES(
+                #{result[0]["id"]}, 
+                #{muscle_id}
+            )")
+        end
+        for location_id in data['locations'] do
+            post_to_database("INSERT INTO location_device (location_id, device_id) VALUES(
+                #{location_id}, 
+                #{result[0]["id"]}
+            )")
+        end
+
+        return { message:"successfully inserted", rabbit: rabbit_status}.to_json
+    end
+
+    delete '/member/:id' do |id|
+        delete_entry(
+            "DELETE FROM trainingplanrequest WHERE member_id = '#{id}';
+            DELETE FROM treatmentrequest WHERE member_id = '#{id}';
+            DELETE FROM treatmentnote WHERE member_id = '#{id}';
+
+            DELETE FROM exercise WHERE trainingplan_id in (SELECT id FROM trainingplan WHERE member_id = '#{id}');
+            DELETE FROM trainingplan WHERE member_id = '#{id}';
+
+            DELETE FROM member WHERE id = '#{id}';"
+        )
+        status 200
+    end
+
+    delete '/device/:id' do |id|
+        delete_entry(
+            "DELETE FROM device_muscle WHERE device_id = '#{id}';
+            DELETE FROM location_device WHERE device_id = '#{id}';
+            DELETE FROM exercise WHERE device_id = '#{id}';
+
+            DELETE FROM device WHERE id = '#{id}';"
+        )
+        status 200
+    end
+
+    delete '/requests/trainingplan/:id' do |id|
+        delete_entry(
+            "DELETE FROM trainingplanrequest WHERE id = '#{id}';"
+        )
+        status 200
+    end
+
+    delete '/requests/treatement/:id' do |id|
+        delete_entry(
+            "DELETE FROM treatmentrequest WHERE id = '#{id}';"
+        )
+        status 200
+    end
+
 end
 

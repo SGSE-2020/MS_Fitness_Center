@@ -19,8 +19,58 @@ spec:
         - containerPort: 80
       - image: ms-fitnesscenter-backend
         name: ms-fitnesscenter-backend
+        env:
+          - name: POSTGRES_DB
+            valueFrom:
+              secretKeyRef:
+                name: ms-fitnesscenter
+                key: POSTGRES_DB
+          - name: POSTGRES_USER
+            valueFrom:
+              secretKeyRef:
+                name: ms-fitnesscenter
+                key: POSTGRES_USER
+          - name: POSTGRES_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: ms-fitnesscenter
+                key: POSTGRES_PASSWORD
+          - name: DB_HOST
+            valueFrom:
+              secretKeyRef:
+                name: ms-fitnesscenter
+                key: DB_HOST
         ports:
         - containerPort: 8080
         - containerPort: 50051
+      - image: ms-fitnesscenter-database
+        name: ms-fitnesscenter-database
+        ports:
+          - containerPort: 5432
+        env:
+          - name: POSTGRES_DB
+            valueFrom:
+              secretKeyRef:
+                name: ms-fitnesscenter
+                key: POSTGRES_DB
+          - name: POSTGRES_USER
+            valueFrom:
+              secretKeyRef:
+                name: ms-fitnesscenter
+                key: POSTGRES_USER
+          - name: POSTGRES_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: ms-fitnesscenter
+                key: POSTGRES_PASSWORD
+        volumeMounts:
+        - mountPath: /var/lib/postgresql/data/
+          name: db
+          subPath: fitnesscenter-db-v3
       restartPolicy: Always
+      volumes:
+        - name: db
+          gcePersistentDisk:
+            pdName: ms-fitnesscenter
+            fsType: ext4
 status: {}

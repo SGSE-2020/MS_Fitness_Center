@@ -11,9 +11,9 @@
         <td>
           <select v-model="role">
             <option value="" selected disabled>Please select one</option>
-            <option value="1">Kunde</option>
-            <option value="2">Trainer</option>
-            <option value="3">Physiotherapeut</option>
+            <option value="0">Kunde</option>
+            <option value="1">Trainer</option>
+            <option value="2">Physiotherapeut</option>
           </select>
         </td>
       </tr>
@@ -25,6 +25,10 @@
             <option v-for="single_abo in all_abos" :key="single_abo.id" :value="single_abo.id">{{ single_abo.name }}</option>
           </select>
         </td>
+      </tr>
+      <tr>
+        <td>Startdatum</td>
+        <td><input type="date" v-model="date"></td>
       </tr>
     </table>
     <button id="conf" v-on:click="confirm">Bestätigen</button>
@@ -39,10 +43,11 @@ export default {
   name: 'AddMember',
   data() {
     return {
-      uuid: None,
-      role: "",
-      abo: "",
-      all_abos: []
+      uuid: null,
+      role: null,
+      abo: null,
+      all_abos: [],
+      date: null
     }
   },
   created() {
@@ -56,10 +61,22 @@ export default {
   methods: {
     confirm: function (event) {
       // add validation
-      alert('Änderungen erfolgreich engefügt')
-      // `event` is the native DOM event
-      if (event) {
-        router.push('/members')
+      console.log(event)
+      if (this.uuid != null && this.role != null) {
+        console.log(JSON.stringify({uid: this.uuid, role: this.role, abo_id: this.abo, abo_start: this.date}))
+        fetch(api_config.url.concat("/members/add"), {
+          method: "POST",
+          body: JSON.stringify({uid: this.uuid, role: this.role, abo_id: this.abo, abo_start: this.date})
+        }).then(res => res.json()).then(data => {
+          alert('Antrag erfolgreich abgeschickt: ' + data.message)
+          router.push('/members')
+            // `event` is the native DOM event
+        }).catch((error) => {
+          console.error(error)
+          alert('Ein Problem ist aufgetreten')
+        })
+      } else {
+          alert('Datum, UUID, Rolle eingeben!')
       }
     }
   }

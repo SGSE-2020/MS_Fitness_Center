@@ -6,7 +6,7 @@
       <tr>
         <th>Name</th><th>Rolle</th>
       </tr>
-      <tr class="bodytr" v-for="member in members" :key="member.id">
+      <tr class="bodytr" v-for="member in members" :key="member.id" v-on:click='opendDetails(member.id)'>
         <td> {{ member.name }} </td><td> {{ roles[parseInt(member.role)] }} </td>
       </tr>
     </table>
@@ -26,6 +26,7 @@
 
 <script>
 import api_config from '../../config/api_config'
+import router from '../router'
 
 export default {
   name: 'Members',
@@ -40,7 +41,13 @@ export default {
       .then(response => response.json())
       .then(json => {
         this.members = json
+        //console.log(json)
       })
+  },
+  methods: {
+    opendDetails: function(id) {
+      router.push('/userdetails/' + String(id))
+    }
   }
 }
 

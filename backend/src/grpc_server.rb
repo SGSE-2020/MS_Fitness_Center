@@ -27,7 +27,7 @@ class ServerImpl < Routeguide::FitnessCenter::Service
     def request_training_plan(request, _call)
         result = post_to_database("INSERT INTO trainingplanrequest (request_date, member_id) VALUES(
             '#{request.date.year}-#{request.date.month}-#{request.date.day}',
-            #{request.member_id}
+            '#{request.member_id}'
         );")
         if result == '' then
             Confirmation.new(code: 200, description: "Succsessfullly added")
@@ -40,7 +40,7 @@ class ServerImpl < Routeguide::FitnessCenter::Service
         result = post_to_database("INSERT INTO treatmentrequest (request_date, note, member_id) VALUES(
             '#{request.date.year}-#{request.date.month}-#{request.date.day}',
             '#{request.note}',
-            #{request.member_id}
+            '#{request.member_id}'
         );")
         if result == '' then
             Confirmation.new(code: 200, description: "Succsessfullly added")

@@ -13,6 +13,7 @@ gem 'pg'
 gem 'rack'
 gem 'rack-protection'
 gem 'rack-cors'
+gem 'bunny'
 group :test do
     gem 'json-schema'
     gem "rspec"
